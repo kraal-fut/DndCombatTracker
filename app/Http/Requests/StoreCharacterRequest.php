@@ -1,0 +1,25 @@
+<?php
+
+namespace App\Http\Requests;
+
+use Illuminate\Foundation\Http\FormRequest;
+
+class StoreCharacterRequest extends FormRequest
+{
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    public function rules(): array
+    {
+        return [
+            'name' => 'required|string|max:255',
+            'initiative' => 'required|integer|min:1',
+            'max_hp' => 'nullable|integer|min:1',
+            'current_hp' => 'nullable|integer|min:0',
+            'armor_class' => 'nullable|integer|min:1',
+            'is_player' => 'nullable|boolean',
+        ];
+    }
+}
