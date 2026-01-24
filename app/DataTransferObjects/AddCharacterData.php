@@ -11,7 +11,9 @@ readonly class AddCharacterData
         public ?int $currentHp = null,
         public ?int $armorClass = null,
         public bool $isPlayer = false,
-    ) {}
+        public ?int $userId = null,
+    ) {
+    }
 
     public static function fromRequest(array $data): self
     {
@@ -22,6 +24,7 @@ readonly class AddCharacterData
             currentHp: $data['current_hp'] ?? null,
             armorClass: $data['armor_class'] ?? null,
             isPlayer: $data['is_player'] ?? false,
+            userId: $data['user_id'] ?? null,
         );
     }
 }

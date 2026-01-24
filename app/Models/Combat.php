@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\CombatStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Combat extends Model
@@ -12,6 +13,7 @@ class Combat extends Model
     use HasFactory;
 
     protected $fillable = [
+        'user_id',
         'name',
         'status',
         'current_round',
@@ -25,15 +27,25 @@ class Combat extends Model
         ];
     }
 
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
     public function characters(): HasMany
     {
         return $this->hasMany(CombatCharacter::class)->orderBy('order')->orderBy('initiative', 'desc')->orderBy('id');
     }
 
+    public function shares(): HasMany
+    {
+        return $this->hasMany(CombatShare::class);
+    }
+
     public function getCurrentCharacter(): ?CombatCharacter
     {
         $characters = $this->characters;
-        
+
         if ($characters->isEmpty()) {
             return null;
         }
@@ -44,13 +56,13 @@ class Combat extends Model
     public function nextTurn(): void
     {
         $characters = $this->characters()->get();
-        
+
         if ($characters->isEmpty()) {
             return;
         }
 
         $currentCharacter = $characters->get($this->current_turn_index);
-        
+
         if (!$currentCharacter) {
             $this->current_turn_index = 0;
             $this->save();
@@ -62,7 +74,7 @@ class Combat extends Model
 
         // Move current character to the end by setting their order to be very high
         $maxOrder = $characters->max('order') ?? 0;
-        
+
         $currentCharacter->update([
             'order' => $maxOrder + 1,
         ]);
@@ -81,7 +93,7 @@ class Combat extends Model
                 }
             }
         });
-        
+
         $currentCharacter->stateEffects()->each(function ($effect) {
             if ($effect->duration_rounds !== null) {
                 $effect->duration_rounds--;
@@ -102,7 +114,7 @@ class Combat extends Model
 
         // Keep the turn index at 0 (always the first character in the list)
         $this->current_turn_index = 0;
-        
+
         $this->save();
     }
 
@@ -111,5 +123,44 @@ class Combat extends Model
         $this->characters->each(function (CombatCharacter $character) {
             $character->reactions()->update(['is_used' => false]);
         });
+    }
+
+    public function hasPlayerCharacter(int $userId): bool
+    {
+        return $this->characters->where('user_id', $userId)->isNotEmpty();
+    }
+
+    public function getActiveShare(): ?CombatShare
+    {
+        return $this->shares()->active()->first();
+    }
+
+    public function generateShareLink(): CombatShare
+    {
+        $existingShare = $this->getActiveShare();
+
+        if ($existingShare) {
+            return $existingShare;
+        }
+
+        return $this->shares()->create([
+            'share_token' => CombatShare::generateToken(),
+            'is_active' => true,
+        ]);
+    }
+
+    public function revokeShare(): void
+    {
+        $this->shares()->where('is_active', true)->update(['is_active' => false]);
+    }
+
+    public function regenerateShareLink(): CombatShare
+    {
+        $this->revokeShare();
+
+        return $this->shares()->create([
+            'share_token' => CombatShare::generateToken(),
+            'is_active' => true,
+        ]);
     }
 }

@@ -1,19 +1,12 @@
 <?php
 
-namespace Tests\Feature;
+use App\Models\User;
+use App\Enums\UserRole;
 
-// use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+it('returns a successful response', function () {
+    $user = User::factory()->create(['role' => UserRole::Player]);
 
-class ExampleTest extends TestCase
-{
-    /**
-     * A basic test example.
-     */
-    public function test_the_application_returns_a_successful_response(): void
-    {
-        $response = $this->get('/');
+    $response = $this->actingAs($user)->get('/dashboard');
 
-        $response->assertRedirect('/combats');
-    }
-}
+    $response->assertStatus(200);
+});

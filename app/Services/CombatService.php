@@ -21,8 +21,7 @@ class CombatService
 
     public function addCharacter(Combat $combat, AddCharacterData $data): CombatCharacter
     {
-        // Get the highest order number across ALL characters
-        $order = $combat->characters()->max('order') ?? -1;
+        $maxOrder = $combat->characters()->max('order') ?? 0;
 
         return $combat->characters()->create([
             'name' => $data->name,
@@ -32,7 +31,8 @@ class CombatService
             'current_hp' => $data->currentHp ?? $data->maxHp,
             'armor_class' => $data->armorClass,
             'is_player' => $data->isPlayer,
-            'order' => $order + 1,
+            'user_id' => $data->userId,
+            'order' => $maxOrder + 1,
         ]);
     }
 
@@ -61,10 +61,10 @@ class CombatService
             'current_turn_index' => 0,
             'current_round' => $combat->current_round + 1,
         ]);
-        
+
         $combat->characters->each(function (CombatCharacter $character) {
             $character->reactions()->update(['is_used' => false]);
-            
+
             $character->conditions()->each(function ($condition) {
                 if ($condition->duration_rounds !== null) {
                     $condition->duration_rounds--;
@@ -75,7 +75,7 @@ class CombatService
                     }
                 }
             });
-            
+
             $character->stateEffects()->each(function ($effect) {
                 if ($effect->duration_rounds !== null) {
                     $effect->duration_rounds--;
@@ -96,7 +96,22 @@ class CombatService
 
     public function resumeCombat(Combat $combat): void
     {
-        $combat->update(['status' => CombatStatus::Active]);
+        // Only sort characters when starting combat for the first time (round 1)
+        // Don't resort when resuming a paused combat mid-game
+        if ($combat->current_round === 1) {
+            $this->sortCharactersByInitiative($combat);
+        }
+
+        $combat->update([
+            'status' => CombatStatus::Active,
+            'current_turn_index' => 0,
+        ]);
+    }
+
+    public function sortCharactersByInitiative(Combat $combat): void
+    {
+        // Reset all character orders to 0 so they sort purely by initiative
+        $combat->characters()->update(['order' => 0]);
     }
 
     public function endCombat(Combat $combat): void

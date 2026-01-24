@@ -13,6 +13,7 @@ class CombatCharacter extends Model
 
     protected $fillable = [
         'combat_id',
+        'user_id',
         'name',
         'initiative',
         'original_initiative',
@@ -33,6 +34,11 @@ class CombatCharacter extends Model
     public function combat(): BelongsTo
     {
         return $this->belongsTo(Combat::class);
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 
     public function conditions(): HasMany
