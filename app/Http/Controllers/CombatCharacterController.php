@@ -28,6 +28,25 @@ class CombatCharacterController extends Controller
             ->with('success', 'Character added to combat!');
     }
 
+    public function edit(Combat $combat, int $character): View
+    {
+        $characterModel = $combat->characters()->findOrFail($character);
+
+        return view('combat-characters.edit', [
+            'combat' => $combat,
+            'character' => $characterModel,
+        ]);
+    }
+
+    public function update(StoreCharacterRequest $request, Combat $combat, int $character): RedirectResponse
+    {
+        $characterModel = $combat->characters()->findOrFail($character);
+        $characterModel->update($request->validated());
+
+        return redirect()->route('combats.show', $combat)
+            ->with('success', 'Character updated successfully!');
+    }
+
     public function destroy(Combat $combat, int $character, CombatService $combatService): RedirectResponse
     {
         $characterModel = $combat->characters()->findOrFail($character);
@@ -47,10 +66,15 @@ class CombatCharacterController extends Controller
     {
         $characterModel = $combat->characters()->findOrFail($character);
 
+        // Check authorization
+        if (!auth()->user()->can('updateHp', $characterModel)) {
+            abort(403, 'You are not authorized to update this character\'s HP.');
+        }
+
         $validated = $request->validated();
 
         $newHp = $characterModel->current_hp;
-        
+
         if ($validated['change_type'] === 'damage') {
             $newHp -= abs($validated['hp_change']);
             $message = abs($validated['hp_change']) . ' damage dealt!';

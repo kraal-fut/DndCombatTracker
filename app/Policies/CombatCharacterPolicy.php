@@ -35,7 +35,7 @@ class CombatCharacterPolicy
             return true;
         }
 
-        return $combatCharacter->is_player && $combatCharacter->user_id === $user->id;
+        return $combatCharacter->user_id === $user->id || $combatCharacter->is_player;
     }
 
     public function create(User $user): bool
@@ -50,6 +50,20 @@ class CombatCharacterPolicy
         }
 
         return $user->isDM() && $combatCharacter->combat->user_id === $user->id;
+    }
+
+    public function updateHp(User $user, CombatCharacter $combatCharacter): bool
+    {
+        if ($user->isAdmin()) {
+            return true;
+        }
+
+        if ($user->isDM() && $combatCharacter->combat->user_id === $user->id) {
+            return true;
+        }
+
+        // Players can update HP on their own characters
+        return $combatCharacter->user_id === $user->id;
     }
 
     public function delete(User $user, CombatCharacter $combatCharacter): bool

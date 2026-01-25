@@ -203,34 +203,36 @@
                                             @endphp
                                             <div class="flex items-center gap-2 mt-1">
                                                 <p class="{{ $hpColor }}">HP: {{ $character->current_hp }}/{{ $character->max_hp }}</p>
-                                                <div class="flex gap-1">
-                                                    <form action="{{ route('combats.characters.update-hp', [$combat, $character]) }}" method="POST" class="inline-flex items-center gap-1">
-                                                        @csrf
-                                                        <input type="hidden" name="change_type" value="damage">
-                                                        <input 
-                                                            type="number" 
-                                                            name="hp_change" 
-                                                            placeholder="DMG"
-                                                            min="1"
-                                                            class="w-16 px-1 py-0.5 text-xs bg-gray-700 border border-gray-600 rounded focus:outline-none focus:ring-1 focus:ring-red-500 text-white"
-                                                            required
-                                                        >
-                                                        <button type="submit" class="px-2 py-0.5 text-xs bg-red-600 hover:bg-red-700 rounded transition">-</button>
-                                                    </form>
-                                                    <form action="{{ route('combats.characters.update-hp', [$combat, $character]) }}" method="POST" class="inline-flex items-center gap-1">
-                                                        @csrf
-                                                        <input type="hidden" name="change_type" value="heal">
-                                                        <input 
-                                                            type="number" 
-                                                            name="hp_change" 
-                                                            placeholder="HEAL"
-                                                            min="1"
-                                                            class="w-16 px-1 py-0.5 text-xs bg-gray-700 border border-gray-600 rounded focus:outline-none focus:ring-1 focus:ring-green-500 text-white"
-                                                            required
-                                                        >
-                                                        <button type="submit" class="px-2 py-0.5 text-xs bg-green-600 hover:bg-green-700 rounded transition">+</button>
-                                                    </form>
-                                                </div>
+                                                @can('updateHp', $character)
+                                                    <div class="flex gap-1">
+                                                        <form action="{{ route('combats.characters.update-hp', [$combat, $character]) }}" method="POST" class="inline-flex items-center gap-1">
+                                                            @csrf
+                                                            <input type="hidden" name="change_type" value="damage">
+                                                            <input 
+                                                                type="number" 
+                                                                name="hp_change" 
+                                                                placeholder="DMG"
+                                                                min="1"
+                                                                class="w-16 px-1 py-0.5 text-xs bg-gray-700 border border-gray-600 rounded focus:outline-none focus:ring-1 focus:ring-red-500 text-white"
+                                                                required
+                                                            >
+                                                            <button type="submit" class="px-2 py-0.5 text-xs bg-red-600 hover:bg-red-700 rounded transition">-</button>
+                                                        </form>
+                                                        <form action="{{ route('combats.characters.update-hp', [$combat, $character]) }}" method="POST" class="inline-flex items-center gap-1">
+                                                            @csrf
+                                                            <input type="hidden" name="change_type" value="heal">
+                                                            <input 
+                                                                type="number" 
+                                                                name="hp_change" 
+                                                                placeholder="HEAL"
+                                                                min="1"
+                                                                class="w-16 px-1 py-0.5 text-xs bg-gray-700 border border-gray-600 rounded focus:outline-none focus:ring-1 focus:ring-green-500 text-white"
+                                                                required
+                                                            >
+                                                            <button type="submit" class="px-2 py-0.5 text-xs bg-green-600 hover:bg-green-700 rounded transition">+</button>
+                                                        </form>
+                                                    </div>
+                                                @endcan
                                             </div>
                                         @endif
                                         @if($character->armor_class)

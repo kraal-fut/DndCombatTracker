@@ -60,7 +60,7 @@ test('dm cannot update characters in other dm combats', function () {
         ['hp_change' => 10, 'change_type' => 'damage']
     );
 
-    $response->assertStatus(302);
+    $response->assertStatus(403);
 });
 
 test('player cannot update other players characters', function () {
@@ -80,7 +80,7 @@ test('player cannot update other players characters', function () {
         ['hp_change' => 10, 'change_type' => 'damage']
     );
 
-    $response->assertStatus(302);
+    $response->assertStatus(403);
 });
 
 test('player cannot update npc characters', function () {
@@ -100,7 +100,30 @@ test('player cannot update npc characters', function () {
         ['hp_change' => 10, 'change_type' => 'damage']
     );
 
-    $response->assertStatus(302);
+    $response->assertStatus(403);
+});
+
+test('player can update hp on their own characters', function () {
+    $dm = User::factory()->create(['role' => UserRole::DM]);
+    $player = User::factory()->create(['role' => UserRole::Player]);
+    $combat = Combat::create(['name' => 'Test', 'user_id' => $dm->id]);
+    $character = $combat->characters()->create([
+        'name' => 'Fighter',
+        'initiative' => 15,
+        'original_initiative' => 15,
+        'is_player' => true,
+        'user_id' => $player->id,
+        'current_hp' => 50,
+        'max_hp' => 50,
+    ]);
+
+    $response = $this->actingAs($player)->post(
+        route('combats.characters.update-hp', [$combat, $character]),
+        ['hp_change' => 10, 'change_type' => 'damage']
+    );
+
+    $response->assertRedirect();
+    expect($character->fresh()->current_hp)->toBe(40);
 });
 
 // delete tests
@@ -182,7 +205,41 @@ test('player cannot delete npc characters', function () {
         'user_id' => $dm->id,
     ]);
 
-    $response = $this->actingAs($player)->delete(route('combats.characters.destroy', [$combat, $npc]));
+    $response = $this->actingAs($player)->post(
+        route('combats.characters.update-hp', [$combat, $npc]),
+        ['hp_change' => 10, 'change_type' => 'damage']
+    );
 
-    $response->assertStatus(302);
+    $response->assertStatus(403);
+});
+
+test('player can view stats of other player characters', function () {
+    $dm = User::factory()->create(['role' => UserRole::DM]);
+    $player1 = User::factory()->create(['role' => UserRole::Player]);
+    $player2 = User::factory()->create(['role' => UserRole::Player]);
+    $combat = Combat::create(['name' => 'Test', 'user_id' => $dm->id]);
+
+    $char1 = $combat->characters()->create([
+        'name' => 'Fighter',
+        'initiative' => 15,
+        'original_initiative' => 15,
+        'is_player' => true,
+        'user_id' => $player1->id,
+        'current_hp' => 50,
+        'max_hp' => 50,
+    ]);
+
+    // Viewer must be in combat to see it
+    $combat->characters()->create([
+        'name' => 'Cleric',
+        'initiative' => 10,
+        'original_initiative' => 10,
+        'is_player' => true,
+        'user_id' => $player2->id,
+    ]);
+
+    $response = $this->actingAs($player2)->get(route('combats.show', $combat));
+
+    $response->assertOk();
+    $response->assertSee('HP: 50/50');
 });

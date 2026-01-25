@@ -39,6 +39,8 @@ Route::middleware('auth')->group(function () {
         Route::prefix('characters')->name('characters.')->group(function () {
             Route::get('create', [CombatCharacterController::class, 'create'])->name('create');
             Route::post('/', [CombatCharacterController::class, 'store'])->name('store');
+            Route::get('{character}/edit', [CombatCharacterController::class, 'edit'])->name('edit');
+            Route::patch('{character}', [CombatCharacterController::class, 'update'])->name('update');
             Route::post('{character}/hp', [CombatCharacterController::class, 'updateHp'])->name('update-hp');
             Route::delete('{character}', [CombatCharacterController::class, 'destroy'])->name('destroy');
             Route::delete('/', [CombatCharacterController::class, 'destroyAll'])->name('destroy-all');
