@@ -13,7 +13,7 @@ class CombatService
     {
         return Combat::create([
             'name' => $name,
-            'status' => CombatStatus::Active,
+            'status' => CombatStatus::Preparation,
             'current_round' => 1,
             'current_turn_index' => 0,
         ]);
@@ -34,6 +34,12 @@ class CombatService
             'user_id' => $data->userId,
             'order' => $maxOrder + 1,
         ]);
+
+        if ($combat->status === CombatStatus::Preparation) {
+            $this->sortCharactersByInitiative($combat);
+        }
+
+        return $character;
     }
 
     public function removeCharacter(CombatCharacter $character): void
@@ -105,6 +111,17 @@ class CombatService
         $combat->update([
             'status' => CombatStatus::Active,
             'current_turn_index' => 0,
+        ]);
+    }
+
+    public function startCombat(Combat $combat): void
+    {
+        $this->sortCharactersByInitiative($combat);
+
+        $combat->update([
+            'status' => CombatStatus::Active,
+            'current_turn_index' => 0,
+            'current_round' => 1,
         ]);
     }
 

@@ -32,6 +32,7 @@ Route::middleware('auth')->group(function () {
     Route::prefix('combats/{combat}')->name('combats.')->group(function () {
         Route::post('next-turn', [CombatController::class, 'nextTurn'])->name('next-turn');
         Route::post('next-round', [CombatController::class, 'nextRound'])->name('next-round');
+        Route::post('start', [CombatController::class, 'start'])->name('start');
         Route::post('pause', [CombatController::class, 'pause'])->name('pause');
         Route::post('resume', [CombatController::class, 'resume'])->name('resume');
         Route::post('end', [CombatController::class, 'end'])->name('end');

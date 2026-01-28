@@ -48,6 +48,15 @@ class CombatController extends Controller
         return view('combats.show', compact('combat'));
     }
 
+    public function start(Combat $combat, CombatService $combatService): RedirectResponse
+    {
+        $this->authorize('update', $combat);
+
+        $combatService->startCombat($combat);
+
+        return back()->with('success', 'Combat started!');
+    }
+
     public function destroy(Combat $combat): RedirectResponse
     {
         $this->authorize('delete', $combat);

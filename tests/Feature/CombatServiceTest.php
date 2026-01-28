@@ -16,7 +16,7 @@ test('can create a combat', function () {
 
     expect($combat)->toBeInstanceOf(Combat::class)
         ->and($combat->name)->toBe('Test Battle')
-        ->and($combat->status)->toBe(CombatStatus::Active)
+        ->and($combat->status)->toBe(CombatStatus::Preparation)
         ->and($combat->current_round)->toBe(1)
         ->and($combat->current_turn_index)->toBe(0);
 });

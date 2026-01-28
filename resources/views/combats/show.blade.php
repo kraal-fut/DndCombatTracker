@@ -25,6 +25,13 @@
                             Resume
                         </button>
                     </form>
+                @elseif($combat->status === App\Enums\CombatStatus::Preparation)
+                    <form action="{{ route('combats.start', $combat) }}" method="POST">
+                        @csrf
+                        <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md transition font-bold">
+                            Start Combat
+                        </button>
+                    </form>
                 @endif
                 
                 @if($combat->status !== App\Enums\CombatStatus::Completed)
