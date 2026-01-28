@@ -10,6 +10,15 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Models\CharacterCondition;
 use App\Models\CharacterStateEffect;
 
+/**
+ * @property int $id
+ * @property string $name
+ * @property CombatStatus $status
+ * @property int $current_round
+ * @property int $current_turn_index
+ * @property \Illuminate\Database\Eloquent\Collection<int, CombatCharacter> $characters
+ * @property \Illuminate\Database\Eloquent\Collection<int, CombatShare> $shares
+ */
 class Combat extends Model
 {
     use HasFactory;
@@ -34,11 +43,17 @@ class Combat extends Model
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<CombatCharacter, $this>
+     */
     public function characters(): HasMany
     {
         return $this->hasMany(CombatCharacter::class)->orderBy('order')->orderBy('initiative', 'desc')->orderBy('id');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<CombatShare, $this>
+     */
     public function shares(): HasMany
     {
         return $this->hasMany(CombatShare::class);
@@ -52,7 +67,9 @@ class Combat extends Model
             return null;
         }
 
-        return $characters->get($this->current_turn_index);
+        /** @var CombatCharacter|null $character */
+        $character = $characters->get($this->current_turn_index);
+        return $character;
     }
 
     public function nextTurn(): void
@@ -109,6 +126,7 @@ class Combat extends Model
 
         // Check if round completed: Next character has higher original_initiative
         // This means we've cycled back to the beginning
+        /** @var CombatCharacter|null $nextCharacter */
         $nextCharacter = $this->characters()->first();
         if ($nextCharacter && $nextCharacter->original_initiative > $currentOriginalInitiative) {
             $this->nextRound();

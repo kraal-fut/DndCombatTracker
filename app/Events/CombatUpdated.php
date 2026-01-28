@@ -11,7 +11,9 @@ use Illuminate\Support\Facades\Log;
 
 class CombatUpdated implements ShouldBroadcastNow
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels;
+    use Dispatchable;
+    use InteractsWithSockets;
+    use SerializesModels;
 
     public function __construct(
         public int $combatId

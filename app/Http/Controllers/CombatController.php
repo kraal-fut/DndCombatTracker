@@ -32,8 +32,7 @@ class CombatController extends Controller
     {
         $this->authorize('create', Combat::class);
 
-        $combat = $combatService->createCombat($request->validated('name'));
-        $combat->update(['user_id' => auth()->id()]);
+        $combat = $combatService->createCombat($request->validated('name'), (int) auth()->id());
 
         return redirect()->route('combats.show', $combat)
             ->with('success', 'Combat created successfully!');

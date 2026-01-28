@@ -22,7 +22,7 @@ class CombatEventHandlerTest extends TestCase
         Event::fake();
     }
 
-    public function test_handle_combat_state_changed_dispatches_broadcast_event(): void
+    public function testHandleCombatStateChangedDispatchesBroadcastEvent(): void
     {
         $event = new CombatStateChanged(1);
         $this->handler->handleCombatStateChanged($event);
@@ -32,7 +32,7 @@ class CombatEventHandlerTest extends TestCase
         });
     }
 
-    public function test_handle_hp_updated_dispatches_broadcast_event(): void
+    public function testHandleHpUpdatedDispatchesBroadcastEvent(): void
     {
         $event = new CharacterHPUpdated(1, 1, 90);
         $this->handler->handleCharacterHPUpdated($event);
@@ -42,7 +42,7 @@ class CombatEventHandlerTest extends TestCase
         });
     }
 
-    public function test_handle_turn_advanced_dispatches_broadcast_event(): void
+    public function testHandleTurnAdvancedDispatchesBroadcastEvent(): void
     {
         $event = new TurnAdvanced(1, 1);
         $this->handler->handleTurnAdvanced($event);
@@ -52,7 +52,7 @@ class CombatEventHandlerTest extends TestCase
         });
     }
 
-    public function test_handle_round_advanced_dispatches_broadcast_event(): void
+    public function testHandleRoundAdvancedDispatchesBroadcastEvent(): void
     {
         $event = new RoundAdvanced(1, 2);
         $this->handler->handleRoundAdvanced($event);

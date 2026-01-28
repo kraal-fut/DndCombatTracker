@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
@@ -19,7 +21,10 @@ class SharedCombatController extends Controller
             abort(404, 'Combat share link is invalid or has expired.');
         }
 
-        $combat = $share->combat()->with(['characters.user', 'characters.conditions', 'characters.stateEffects'])->first();
+        /** @var Combat|null $combat */
+        $combat = $share->combat()
+            ->with(['characters.user', 'characters.conditions', 'characters.stateEffects'])
+            ->first();
 
         if (!$combat) {
             abort(404, 'Combat not found.');
@@ -48,6 +53,7 @@ class SharedCombatController extends Controller
             abort(404, 'Combat share link is invalid or has expired.');
         }
 
+        /** @var Combat $combat */
         $combat = $share->combat;
 
         return view('combats.add-character', compact('combat', 'share'));
@@ -73,6 +79,7 @@ class SharedCombatController extends Controller
             'armor_class' => 'required|integer|min:1|max:30',
         ]);
 
+        /** @var Combat $combat */
         $combat = $share->combat;
 
         $character = $combat->characters()->create([

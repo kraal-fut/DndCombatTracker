@@ -55,7 +55,7 @@ class CombatCommandHandlerTest extends TestCase
         ]);
     }
 
-    public function test_handle_update_hp_damage(): void
+    public function testHandleUpdateHpDamage(): void
     {
         $command = new UpdateCharacterHP(
             $this->combat->id,
@@ -77,7 +77,7 @@ class CombatCommandHandlerTest extends TestCase
         $this->assertEquals(30, $this->character->fresh()->current_hp);
     }
 
-    public function test_handle_update_hp_heal(): void
+    public function testHandleUpdateHpHeal(): void
     {
         $command = new UpdateCharacterHP(
             $this->combat->id,
@@ -99,7 +99,7 @@ class CombatCommandHandlerTest extends TestCase
         $this->assertEquals(70, $this->character->fresh()->current_hp);
     }
 
-    public function test_handle_next_turn(): void
+    public function testHandleNextTurn(): void
     {
         $command = new NextTurn($this->combat->id);
 
@@ -112,12 +112,12 @@ class CombatCommandHandlerTest extends TestCase
 
         $this->handler->handleNextTurn($command, $this->eventBus);
 
-        // We verified the event was published. 
+        // We verified the event was published.
         // Logic for turn index advancement depends on characters in combat.
         $this->assertNotNull($this->combat->fresh()->current_turn_index);
     }
 
-    public function test_handle_next_round(): void
+    public function testHandleNextRound(): void
     {
         $command = new NextRound($this->combat->id);
 

@@ -13,7 +13,7 @@ class CharacterConditionController extends Controller
     public function create(CombatCharacter $character): View
     {
         $conditionTypes = ConditionType::cases();
-        
+
         return view('character-conditions.create', compact('character', 'conditionTypes'));
     }
 

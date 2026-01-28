@@ -12,7 +12,6 @@ use App\Models\Combat;
 use App\Models\CombatCharacter;
 use Ecotone\Modelling\Attribute\CommandHandler;
 use Ecotone\Modelling\EventBus;
-
 use App\Enums\HPUpdateType;
 
 class CombatCommandHandler

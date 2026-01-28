@@ -47,8 +47,13 @@ class RealtimeCombatObserver
             return $model->combat_id;
         }
 
-        if ($model instanceof CharacterCondition || $model instanceof CharacterStateEffect || $model instanceof CharacterReaction) {
-            return $model->combatCharacter?->combat_id;
+        if (
+            $model instanceof CharacterCondition ||
+            $model instanceof CharacterStateEffect ||
+            $model instanceof CharacterReaction
+        ) {
+            /** @var CharacterCondition|CharacterStateEffect|CharacterReaction $model */
+            return $model->combatCharacter->combat_id;
         }
 
         return null;

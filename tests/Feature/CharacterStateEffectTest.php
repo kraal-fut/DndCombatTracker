@@ -82,7 +82,8 @@ test('can remove state effect from character', function () {
 
 test('state effects with duration are reduced on next round', function () {
     $service = new App\Services\CombatService();
-    $combat = $service->createCombat('Test Battle');
+    $user = User::factory()->create();
+    $combat = $service->createCombat('Test Battle', $user->id);
 
     $character = $service->addCharacter($combat, new AddCharacterData('Fighter', 15));
     $effect = $character->stateEffects()->create([

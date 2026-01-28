@@ -23,7 +23,8 @@ test('can create a combat', function () {
 
 test('can add character to combat', function () {
     $service = new CombatService();
-    $combat = $service->createCombat('Test Battle');
+    $user = User::factory()->create();
+    $combat = $service->createCombat('Test Battle', $user->id);
 
     $character = $service->addCharacter(
         combat: $combat,
@@ -55,11 +56,13 @@ test('characters are ordered by initiative initially', function () {
     $service->addCharacter($combat, new AddCharacterData('Wizard', 18));
     $service->addCharacter($combat, new AddCharacterData('Rogue', 15));
 
+    $service->startCombat($combat);
+
     $characters = $combat->fresh()->characters;
 
-    // All start with order 0, so sorted by initiative descending: Wizard (18), Rogue (15), Fighter (12)
-    expect($characters->pluck('name')->toArray())->toBe(['Fighter', 'Wizard', 'Rogue']);
-    expect($characters->pluck('initiative')->toArray())->toBe([12, 18, 15]);
+    // After startCombat, all orders are 0, so sorted by initiative descending: Wizard (18), Rogue (15), Fighter (12)
+    expect($characters->pluck('name')->toArray())->toBe(['Wizard', 'Rogue', 'Fighter']);
+    expect($characters->pluck('initiative')->toArray())->toBe([18, 15, 12]);
 });
 
 test('can advance to next turn', function () {
@@ -70,26 +73,29 @@ test('can advance to next turn', function () {
     $fighter = $service->addCharacter($combat, new AddCharacterData('Fighter', 12));
     $wizard = $service->addCharacter($combat, new AddCharacterData('Wizard', 18));
 
-    expect($combat->current_turn_index)->toBe(0);
+    $service->startCombat($combat);
 
-    // All start with order 0, sorted by initiative: Wizard (18) comes before Fighter (12)
+    expect($combat->fresh()->current_turn_index)->toBe(0);
+
+    // After startCombat, sorted by initiative: Wizard (18) comes before Fighter (12)
     $characters = $combat->fresh()->characters;
-    expect($characters->first()->name)->toBe('Fighter');
-    expect($characters->first()->order)->toBe(1);
+    expect($characters->first()->name)->toBe('Wizard');
+    expect($characters->first()->order)->toBe(0);
 
     // After next turn, Wizard's order increases, Fighter now has lower order so comes first
     $service->nextTurn($combat);
     expect($combat->fresh()->current_turn_index)->toBe(0);
 
     $characters = $combat->fresh()->characters;
-    expect($characters->first()->name)->toBe('Wizard');
-    expect($characters->first()->order)->toBe(2);
-    expect($characters->first()->initiative)->toBe(18); // Initiative unchanged!
+    expect($characters->first()->name)->toBe('Fighter');
+    expect($characters->first()->order)->toBe(0);
+    expect($characters->first()->initiative)->toBe(12);
 });
 
 test('can advance to next round', function () {
     $service = new CombatService();
-    $combat = $service->createCombat('Test Battle');
+    $user = User::factory()->create();
+    $combat = $service->createCombat('Test Battle', $user->id);
 
     $service->addCharacter($combat, new AddCharacterData('Fighter', 12));
     $service->addCharacter($combat, new AddCharacterData('Wizard', 18));
@@ -102,7 +108,8 @@ test('can advance to next round', function () {
 
 test('can remove character from combat', function () {
     $service = new CombatService();
-    $combat = $service->createCombat('Test Battle');
+    $user = User::factory()->create();
+    $combat = $service->createCombat('Test Battle', $user->id);
 
     $character = $service->addCharacter($combat, new AddCharacterData('Fighter', 12));
 
@@ -115,7 +122,8 @@ test('can remove character from combat', function () {
 
 test('can remove all characters from combat', function () {
     $service = new CombatService();
-    $combat = $service->createCombat('Test Battle');
+    $user = User::factory()->create();
+    $combat = $service->createCombat('Test Battle', $user->id);
 
     $service->addCharacter($combat, new AddCharacterData('Fighter', 12));
     $service->addCharacter($combat, new AddCharacterData('Wizard', 18));
@@ -131,7 +139,8 @@ test('can remove all characters from combat', function () {
 
 test('can pause and resume combat', function () {
     $service = new CombatService();
-    $combat = $service->createCombat('Test Battle');
+    $user = User::factory()->create();
+    $combat = $service->createCombat('Test Battle', $user->id);
 
     $service->pauseCombat($combat);
     expect($combat->fresh()->status)->toBe(CombatStatus::Paused);
@@ -142,7 +151,8 @@ test('can pause and resume combat', function () {
 
 test('can end combat', function () {
     $service = new CombatService();
-    $combat = $service->createCombat('Test Battle');
+    $user = User::factory()->create();
+    $combat = $service->createCombat('Test Battle', $user->id);
 
     $service->endCombat($combat);
 
@@ -151,7 +161,8 @@ test('can end combat', function () {
 
 test('reactions are reset when character turn ends', function () {
     $service = new CombatService();
-    $combat = $service->createCombat('Test Battle');
+    $user = User::factory()->create();
+    $combat = $service->createCombat('Test Battle', $user->id);
 
     $character = $service->addCharacter($combat, new AddCharacterData('Fighter', 12));
     $reaction = $character->reactions()->create([
@@ -168,7 +179,8 @@ test('reactions are reset when character turn ends', function () {
 
 test('round increments when last character acts', function () {
     $service = new CombatService();
-    $combat = $service->createCombat('Test Battle');
+    $user = User::factory()->create();
+    $combat = $service->createCombat('Test Battle', $user->id);
 
     // Add 3 characters with different initiatives
     $wizard = $service->addCharacter($combat, new AddCharacterData('Wizard', 18));
@@ -192,7 +204,8 @@ test('round increments when last character acts', function () {
 
 test('round increments correctly with tied initiatives', function () {
     $service = new CombatService();
-    $combat = $service->createCombat('Test Battle');
+    $user = User::factory()->create();
+    $combat = $service->createCombat('Test Battle', $user->id);
 
     // Add 3 characters, two with same initiative
     $wizard = $service->addCharacter($combat, new AddCharacterData('Wizard', 18));
@@ -213,4 +226,3 @@ test('round increments correctly with tied initiatives', function () {
     $service->nextTurn($combat);
     expect($combat->fresh()->current_round)->toBe(2);
 });
-

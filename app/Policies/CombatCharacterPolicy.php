@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Models\Combat;
 use App\Models\CombatCharacter;
 use App\Models\User;
 
@@ -18,7 +19,9 @@ class CombatCharacterPolicy
             return true;
         }
 
-        if ($user->isDM() && $combatCharacter->combat->user_id === $user->id) {
+        /** @var Combat $combat */
+        $combat = $combatCharacter->combat;
+        if ($user->isDM() && $combat->user_id === $user->id) {
             return true;
         }
 
@@ -31,7 +34,9 @@ class CombatCharacterPolicy
             return true;
         }
 
-        if ($user->isDM() && $combatCharacter->combat->user_id === $user->id) {
+        /** @var Combat $combat */
+        $combat = $combatCharacter->combat;
+        if ($user->isDM() && $combat->user_id === $user->id) {
             return true;
         }
 
@@ -49,7 +54,9 @@ class CombatCharacterPolicy
             return true;
         }
 
-        return $user->isDM() && $combatCharacter->combat->user_id === $user->id;
+        /** @var Combat $combat */
+        $combat = $combatCharacter->combat;
+        return $user->isDM() && $combat->user_id === $user->id;
     }
 
     public function updateHp(User $user, CombatCharacter $combatCharacter): bool
@@ -58,7 +65,9 @@ class CombatCharacterPolicy
             return true;
         }
 
-        if ($user->isDM() && $combatCharacter->combat->user_id === $user->id) {
+        /** @var Combat $combat */
+        $combat = $combatCharacter->combat;
+        if ($user->isDM() && $combat->user_id === $user->id) {
             return true;
         }
 
@@ -72,7 +81,9 @@ class CombatCharacterPolicy
             return true;
         }
 
-        return $user->isDM() && $combatCharacter->combat->user_id === $user->id;
+        /** @var Combat $combat */
+        $combat = $combatCharacter->combat;
+        return $user->isDM() && $combat->user_id === $user->id;
     }
 
     public function restore(User $user, CombatCharacter $combatCharacter): bool

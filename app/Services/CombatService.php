@@ -5,14 +5,17 @@ namespace App\Services;
 use App\DataTransferObjects\AddCharacterData;
 use App\Models\Combat;
 use App\Models\CombatCharacter;
+use App\Models\CharacterCondition;
+use App\Models\CharacterStateEffect;
 use App\Enums\CombatStatus;
 
 class CombatService
 {
-    public function createCombat(string $name): Combat
+    public function createCombat(string $name, int $userId): Combat
     {
         return Combat::create([
             'name' => $name,
+            'user_id' => $userId,
             'status' => CombatStatus::Preparation,
             'current_round' => 1,
             'current_turn_index' => 0,
@@ -23,7 +26,7 @@ class CombatService
     {
         $maxOrder = $combat->characters()->max('order') ?? 0;
 
-        return $combat->characters()->create([
+        $character = $combat->characters()->create([
             'name' => $data->name,
             'initiative' => $data->initiative,
             'original_initiative' => $data->initiative,
@@ -39,6 +42,7 @@ class CombatService
             $this->sortCharactersByInitiative($combat);
         }
 
+        /** @var CombatCharacter $character */
         return $character;
     }
 
@@ -71,7 +75,7 @@ class CombatService
         $combat->characters->each(function (CombatCharacter $character) {
             $character->reactions()->update(['is_used' => false]);
 
-            $character->conditions()->each(function ($condition) {
+            $character->conditions()->each(function (CharacterCondition $condition) {
                 if ($condition->duration_rounds !== null) {
                     $condition->duration_rounds--;
                     if ($condition->duration_rounds <= 0) {
@@ -82,7 +86,7 @@ class CombatService
                 }
             });
 
-            $character->stateEffects()->each(function ($effect) {
+            $character->stateEffects()->each(function (CharacterStateEffect $effect) {
                 if ($effect->duration_rounds !== null) {
                     $effect->duration_rounds--;
                     if ($effect->duration_rounds <= 0) {

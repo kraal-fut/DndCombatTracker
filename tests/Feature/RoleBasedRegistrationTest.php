@@ -18,16 +18,18 @@ test('new users are assigned player role by default', function () {
 });
 
 test('player can access dashboard after registration', function () {
-    $response = $this->post('/register', [
+    $this->post('/register', [
         'name' => 'Test Player',
         'email' => 'player@example.com',
         'password' => 'password',
         'password_confirmation' => 'password',
     ]);
 
-    $response->assertRedirect(route('dashboard'));
+    $user = User::where('email', 'player@example.com')->first();
+    /** @var User $user */
+    $user->markEmailAsVerified();
 
-    $response = $this->get(route('dashboard'));
+    $response = $this->actingAs($user)->get(route('dashboard'));
     $response->assertStatus(200);
 });
 

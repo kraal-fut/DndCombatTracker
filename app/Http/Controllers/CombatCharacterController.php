@@ -20,8 +20,11 @@ class CombatCharacterController extends Controller
         return view('combat-characters.create', compact('combat'));
     }
 
-    public function store(StoreCharacterRequest $request, Combat $combat, CombatService $combatService): RedirectResponse
-    {
+    public function store(
+        StoreCharacterRequest $request,
+        Combat $combat,
+        CombatService $combatService
+    ): RedirectResponse {
         $combatService->addCharacter(
             combat: $combat,
             data: AddCharacterData::fromRequest($request->validated())
@@ -65,8 +68,12 @@ class CombatCharacterController extends Controller
         return back()->with('success', 'All characters removed from combat!');
     }
 
-    public function updateHp(UpdateHpRequest $request, Combat $combat, int $character, CommandBus $commandBus): RedirectResponse
-    {
+    public function updateHp(
+        UpdateHpRequest $request,
+        Combat $combat,
+        int $character,
+        CommandBus $commandBus
+    ): RedirectResponse {
         $characterModel = $combat->characters()->findOrFail($character);
 
         // Check authorization
