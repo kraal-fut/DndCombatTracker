@@ -1,0 +1,21 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    paths:
+        - app/
+
+    # Level 5 is a good starting point, can be increased to 9
+    level: 5
+
+    treatPhpDocTypesAsCertain: false
+
+    reportUnmatchedIgnoredErrors: false
+
+    ignoreErrors:
+        - '#PHPDoc tag @var for variable \$[^ ]+ contains unresolvable type#'
+        - '#Undefined variable: \$this#'
+        - '#Variable \$this in PHPDoc tag @var does not exist.#'
+
+    excludePaths:
+        - ./*/*/FileToBeExcluded.php

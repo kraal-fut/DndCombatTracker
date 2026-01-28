@@ -75,7 +75,8 @@ test('can remove condition from character', function () {
 
 test('conditions with duration are reduced on next round', function () {
     $service = new App\Services\CombatService();
-    $combat = $service->createCombat('Test Battle');
+    $user = User::factory()->create();
+    $combat = $service->createCombat('Test Battle', $user->id);
 
     $character = $service->addCharacter($combat, new AddCharacterData('Fighter', 15));
     $condition = $character->conditions()->create([
@@ -92,7 +93,8 @@ test('conditions with duration are reduced on next round', function () {
 
 test('conditions are removed when duration reaches zero', function () {
     $service = new App\Services\CombatService();
-    $combat = $service->createCombat('Test Battle');
+    $user = User::factory()->create();
+    $combat = $service->createCombat('Test Battle', $user->id);
 
     $character = $service->addCharacter($combat, new AddCharacterData('Fighter', 15));
     $condition = $character->conditions()->create([

@@ -13,7 +13,7 @@ return new class extends Migration
             Schema::table('combat_characters', function (Blueprint $table) {
                 $table->integer('original_initiative')->after('initiative')->default(0);
             });
-            
+
             // Update existing records to set original_initiative equal to initiative
             \DB::table('combat_characters')->update([
                 'original_initiative' => \DB::raw('initiative')

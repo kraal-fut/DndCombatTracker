@@ -15,7 +15,7 @@ class CharacterStateEffectController extends Controller
     {
         $modifierTypes = StateModifierType::cases();
         $advantageStates = AdvantageState::cases();
-        
+
         return view('character-state-effects.create', compact('character', 'modifierTypes', 'advantageStates'));
     }
 

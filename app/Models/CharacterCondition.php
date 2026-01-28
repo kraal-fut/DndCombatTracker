@@ -7,6 +7,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property ConditionType $condition_type
+ * @property string|null $custom_name
+ */
 class CharacterCondition extends Model
 {
     use HasFactory;
@@ -26,6 +30,9 @@ class CharacterCondition extends Model
         ];
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<CombatCharacter, $this>
+     */
     public function combatCharacter(): BelongsTo
     {
         return $this->belongsTo(CombatCharacter::class);

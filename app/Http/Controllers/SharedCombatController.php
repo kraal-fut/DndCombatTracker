@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
@@ -19,15 +21,30 @@ class SharedCombatController extends Controller
             abort(404, 'Combat share link is invalid or has expired.');
         }
 
-        $combat = $share->combat()->with(['characters.user', 'characters.conditions', 'characters.stateEffects'])->first();
+        /** @var Combat|null $combat */
+        $combat = $share->combat()
+            ->with(['characters.user', 'characters.conditions', 'characters.stateEffects', 'characters.reactions'])
+            ->first();
 
         if (!$combat) {
             abort(404, 'Combat not found.');
         }
 
+        // If combat is already active and user is a participant, redirect to main combat page
+        if ($combat->status === \App\Enums\CombatStatus::Active && auth()->check()) {
+            $isParticipant = $combat->characters->where('user_id', auth()->id())->isNotEmpty();
+            if ($isParticipant) {
+                return redirect()->route('combats.show', $combat);
+            }
+        }
+
         $userCharacters = auth()->check()
             ? $combat->characters->where('user_id', auth()->id())
             : collect();
+
+        if (request()->header('X-Partial-Board')) {
+            return view('combats._shared_board', compact('combat', 'share', 'userCharacters'));
+        }
 
         return view('combats.shared', compact('combat', 'share', 'userCharacters'));
     }
@@ -44,6 +61,7 @@ class SharedCombatController extends Controller
             abort(404, 'Combat share link is invalid or has expired.');
         }
 
+        /** @var Combat $combat */
         $combat = $share->combat;
 
         return view('combats.add-character', compact('combat', 'share'));
@@ -69,6 +87,7 @@ class SharedCombatController extends Controller
             'armor_class' => 'required|integer|min:1|max:30',
         ]);
 
+        /** @var Combat $combat */
         $combat = $share->combat;
 
         $character = $combat->characters()->create([
