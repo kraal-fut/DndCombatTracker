@@ -16,6 +16,6 @@ test('new users can register', function () {
 
     $this->assertGuest();
     $response->assertRedirect(route('login'));
-    $response->assertSessionHas('status', 'Registration successful! Please verify your email address 
-        before logging in.');
+    $response->assertSessionHas('status', 'Registration successful! ' .
+        'Please verify your email address before logging in.');
 });
