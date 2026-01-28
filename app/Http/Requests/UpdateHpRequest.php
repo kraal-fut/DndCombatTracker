@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\HPUpdateType;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Enum;
 
 class UpdateHpRequest extends FormRequest
 {
@@ -15,7 +17,7 @@ class UpdateHpRequest extends FormRequest
     {
         return [
             'hp_change' => 'required|integer',
-            'change_type' => 'required|in:damage,heal',
+            'change_type' => ['required', new Enum(HPUpdateType::class)],
         ];
     }
 }

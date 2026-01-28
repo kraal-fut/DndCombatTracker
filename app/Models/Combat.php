@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\CharacterCondition;
+use App\Models\CharacterStateEffect;
 
 class Combat extends Model
 {
@@ -83,7 +85,7 @@ class Combat extends Model
         $currentCharacter->reactions()->update(['is_used' => false]);
 
         // Decrement durations for conditions and state effects
-        $currentCharacter->conditions()->each(function ($condition) {
+        $currentCharacter->conditions->each(function (CharacterCondition $condition) {
             if ($condition->duration_rounds !== null) {
                 $condition->duration_rounds--;
                 if ($condition->duration_rounds <= 0) {
@@ -94,7 +96,7 @@ class Combat extends Model
             }
         });
 
-        $currentCharacter->stateEffects()->each(function ($effect) {
+        $currentCharacter->stateEffects->each(function (CharacterStateEffect $effect) {
             if ($effect->duration_rounds !== null) {
                 $effect->duration_rounds--;
                 if ($effect->duration_rounds <= 0) {
@@ -109,11 +111,45 @@ class Combat extends Model
         // This means we've cycled back to the beginning
         $nextCharacter = $this->characters()->first();
         if ($nextCharacter && $nextCharacter->original_initiative > $currentOriginalInitiative) {
-            $this->current_round++;
+            $this->nextRound();
         }
 
         // Keep the turn index at 0 (always the first character in the list)
         $this->current_turn_index = 0;
+
+        $this->save();
+    }
+
+    public function nextRound(): void
+    {
+        $this->current_round++;
+        $this->current_turn_index = 0;
+
+        $this->characters->each(function (CombatCharacter $character) {
+            $character->reactions()->update(['is_used' => false]);
+
+            $character->conditions->each(function (CharacterCondition $condition) {
+                if ($condition->duration_rounds !== null) {
+                    $condition->duration_rounds--;
+                    if ($condition->duration_rounds <= 0) {
+                        $condition->delete();
+                    } else {
+                        $condition->save();
+                    }
+                }
+            });
+
+            $character->stateEffects->each(function (CharacterStateEffect $effect) {
+                if ($effect->duration_rounds !== null) {
+                    $effect->duration_rounds--;
+                    if ($effect->duration_rounds <= 0) {
+                        $effect->delete();
+                    } else {
+                        $effect->save();
+                    }
+                }
+            });
+        });
 
         $this->save();
     }

@@ -7,8 +7,11 @@ use App\Http\Requests\StoreCharacterRequest;
 use App\Http\Requests\UpdateHpRequest;
 use App\Models\Combat;
 use App\Services\CombatService;
+use App\Messaging\Commands\UpdateCharacterHP;
+use Ecotone\Modelling\CommandBus;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
+use App\Enums\HPUpdateType;
 
 class CombatCharacterController extends Controller
 {
@@ -62,7 +65,7 @@ class CombatCharacterController extends Controller
         return back()->with('success', 'All characters removed from combat!');
     }
 
-    public function updateHp(UpdateHpRequest $request, Combat $combat, int $character): RedirectResponse
+    public function updateHp(UpdateHpRequest $request, Combat $combat, int $character, CommandBus $commandBus): RedirectResponse
     {
         $characterModel = $combat->characters()->findOrFail($character);
 
@@ -72,20 +75,18 @@ class CombatCharacterController extends Controller
         }
 
         $validated = $request->validated();
+        $type = HPUpdateType::from($validated['change_type']);
 
-        $newHp = $characterModel->current_hp;
+        $commandBus->send(new UpdateCharacterHP(
+            combatId: $combat->id,
+            characterId: $characterModel->id,
+            changeAmount: abs($validated['hp_change']),
+            type: $type
+        ));
 
-        if ($validated['change_type'] === 'damage') {
-            $newHp -= abs($validated['hp_change']);
-            $message = abs($validated['hp_change']) . ' damage dealt!';
-        } else {
-            $newHp += abs($validated['hp_change']);
-            $message = abs($validated['hp_change']) . ' HP restored!';
-        }
-
-        $newHp = max(0, min($newHp, $characterModel->max_hp ?? PHP_INT_MAX));
-
-        $characterModel->update(['current_hp' => $newHp]);
+        $message = $type === HPUpdateType::Damage
+            ? abs($validated['hp_change']) . ' damage dealt!'
+            : abs($validated['hp_change']) . ' HP restored!';
 
         return back()->with('success', $message);
     }

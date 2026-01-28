@@ -29,6 +29,10 @@ class SharedCombatController extends Controller
             ? $combat->characters->where('user_id', auth()->id())
             : collect();
 
+        if (request()->header('X-Partial-Board')) {
+            return view('combats._shared_board', compact('combat', 'share', 'userCharacters'));
+        }
+
         return view('combats.shared', compact('combat', 'share', 'userCharacters'));
     }
 
