@@ -1,0 +1,7 @@
+environments:
+  production:
+    build:
+      - npm install
+      - npm run build
+    deploy:
+      - php artisan migrate --force

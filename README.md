@@ -244,6 +244,27 @@ When adding new features:
 6. Create Blade views
 7. Write Pest tests for all functionality
 
+## Deployment
+
+This application is designed to be deployed to **Laravel Cloud**.
+
+### Steps to Deploy
+
+1. **Push to GitHub/GitLab**: Ensure your code is pushed to a remote repository.
+2. **Connect to Laravel Cloud**:
+   - Log in to your [Laravel Cloud dashboard](https://cloud.laravel.com).
+   - Create a new project and link your repository.
+3. **Configure Environment Variables**:
+   - Set `APP_KEY` (generate one locally or use the one from Laravel Cloud).
+   - `BROADCAST_CONNECTION` should be set to `reverb`.
+   - `QUEUE_CONNECTION` should be set to `database` or `redis`.
+4. **Services**:
+   - Add a **Database** (PostgreSQL or MySQL).
+   - Add a **WebSocket Cluster** for Reverb.
+5. **Deploy**: Trigger a deployment from the dashboard.
+
+For more details, see the [Laravel Cloud Documentation](https://laravel.com/docs/cloud).
+
 ## License
 
 This project is open-source software.
