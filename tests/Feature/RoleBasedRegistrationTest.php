@@ -11,7 +11,8 @@ test('new users are assigned player role by default', function () {
         'password_confirmation' => 'password',
     ]);
 
-    $this->assertAuthenticated();
+    $this->assertGuest();
+    $response->assertRedirect(route('login'));
 
     $user = User::where('email', 'player@example.com')->first();
     expect($user->role)->toBe(UserRole::Player);
