@@ -5,7 +5,11 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreCombatRequest;
 use App\Models\Combat;
 use App\Services\CombatService;
+use App\Messaging\Commands\NextRound;
+use App\Messaging\Commands\NextTurn;
+use Ecotone\Modelling\CommandBus;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class CombatController extends Controller
@@ -28,8 +32,7 @@ class CombatController extends Controller
     {
         $this->authorize('create', Combat::class);
 
-        $combat = $combatService->createCombat($request->validated('name'));
-        $combat->update(['user_id' => auth()->id()]);
+        $combat = $combatService->createCombat($request->validated('name'), (int) auth()->id());
 
         return redirect()->route('combats.show', $combat)
             ->with('success', 'Combat created successfully!');
@@ -44,6 +47,10 @@ class CombatController extends Controller
             'characters.stateEffects',
             'characters.reactions',
         ]);
+
+        if (request()->header('X-Partial-Board')) {
+            return view('combats._board', compact('combat'));
+        }
 
         return view('combats.show', compact('combat'));
     }
@@ -67,20 +74,20 @@ class CombatController extends Controller
             ->with('success', 'Combat deleted successfully!');
     }
 
-    public function nextTurn(Combat $combat, CombatService $combatService): RedirectResponse
+    public function nextTurn(Combat $combat, CommandBus $commandBus): RedirectResponse
     {
         $this->authorize('update', $combat);
 
-        $combatService->nextTurn($combat);
+        $commandBus->send(new NextTurn($combat->id));
 
         return back()->with('success', 'Advanced to next turn!');
     }
 
-    public function nextRound(Combat $combat, CombatService $combatService): RedirectResponse
+    public function nextRound(Combat $combat, CommandBus $commandBus): RedirectResponse
     {
         $this->authorize('update', $combat);
 
-        $combatService->nextRound($combat);
+        $commandBus->send(new NextRound($combat->id));
 
         return back()->with('success', 'Advanced to next round!');
     }

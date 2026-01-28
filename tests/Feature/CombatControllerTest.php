@@ -118,4 +118,3 @@ test('can advance combat round', function () {
     $response->assertRedirect();
     expect($combat->fresh()->current_round)->toBe(2);
 });
-

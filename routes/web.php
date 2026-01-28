@@ -75,8 +75,10 @@ Route::middleware('auth')->group(function () {
 Route::middleware('auth')->prefix('shared/combat/{token}')->group(function () {
     Route::get('/', [SharedCombatController::class, 'show'])->name('combats.shared');
     Route::get('/add-character', [SharedCombatController::class, 'addCharacter'])->name('combats.shared.add-character');
-    Route::post('/add-character', [SharedCombatController::class, 'storeCharacter'])->name('combats.shared.store-character');
-    Route::patch('/character/{character}', [SharedCombatController::class, 'updateCharacter'])->name('combats.shared.update-character');
+    Route::post('/add-character', [SharedCombatController::class, 'storeCharacter'])
+        ->name('combats.shared.store-character');
+    Route::patch('/character/{character}', [SharedCombatController::class, 'updateCharacter'])
+        ->name('combats.shared.update-character');
 });
 
 // Share management routes (DM/Admin only)

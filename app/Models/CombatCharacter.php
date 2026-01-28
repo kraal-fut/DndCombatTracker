@@ -7,6 +7,22 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property int $id
+ * @property int $combat_id
+ * @property int $user_id
+ * @property string $name
+ * @property int $initiative
+ * @property int $original_initiative
+ * @property int $max_hp
+ * @property int $current_hp
+ * @property int $armor_class
+ * @property bool $is_player
+ * @property int $order
+ * @property \Illuminate\Database\Eloquent\Collection<int, CharacterCondition> $conditions
+ * @property \Illuminate\Database\Eloquent\Collection<int, CharacterStateEffect> $stateEffects
+ * @property \Illuminate\Database\Eloquent\Collection<int, CharacterReaction> $reactions
+ */
 class CombatCharacter extends Model
 {
     use HasFactory;
@@ -31,6 +47,9 @@ class CombatCharacter extends Model
         ];
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Combat, $this>
+     */
     public function combat(): BelongsTo
     {
         return $this->belongsTo(Combat::class);
@@ -41,16 +60,25 @@ class CombatCharacter extends Model
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<CharacterCondition, $this>
+     */
     public function conditions(): HasMany
     {
         return $this->hasMany(CharacterCondition::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<CharacterStateEffect, $this>
+     */
     public function stateEffects(): HasMany
     {
         return $this->hasMany(CharacterStateEffect::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<CharacterReaction, $this>
+     */
     public function reactions(): HasMany
     {
         return $this->hasMany(CharacterReaction::class);

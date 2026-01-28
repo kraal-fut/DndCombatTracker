@@ -8,6 +8,16 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $id
+ * @property int $combat_character_id
+ * @property StateModifierType $modifier_type
+ * @property string $name
+ * @property int|null $value
+ * @property AdvantageState $advantage_state
+ * @property string|null $description
+ * @property int|null $duration_rounds
+ */
 class CharacterStateEffect extends Model
 {
     use HasFactory;
@@ -30,6 +40,9 @@ class CharacterStateEffect extends Model
         ];
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<CombatCharacter, $this>
+     */
     public function combatCharacter(): BelongsTo
     {
         return $this->belongsTo(CombatCharacter::class);
