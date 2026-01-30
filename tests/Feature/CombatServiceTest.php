@@ -33,7 +33,6 @@ test('can add character to combat', function () {
             initiative: 15,
             maxHp: 100,
             currentHp: 80,
-            armorClass: 15,
             isPlayer: true
         )
     );
@@ -43,7 +42,6 @@ test('can add character to combat', function () {
         ->and($character->initiative)->toBe(15)
         ->and($character->max_hp)->toBe(100)
         ->and($character->current_hp)->toBe(80)
-        ->and($character->armor_class)->toBe(15)
         ->and($character->is_player)->toBeTrue();
 });
 

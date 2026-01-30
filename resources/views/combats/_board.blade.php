@@ -226,7 +226,7 @@
                                                 @endcan
                                             </div>
                                         </div>
-                                        <div class="text-gray-400 text-sm">AC: {{ $character->armor_class }}</div>
+                                        </div>
                                     @else
                                         <p class="text-sm text-gray-500 mt-1">Stats hidden</p>
                                     @endcan
