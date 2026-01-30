@@ -9,7 +9,6 @@ readonly class AddCharacterData
         public int $initiative,
         public ?int $maxHp = null,
         public ?int $currentHp = null,
-        public ?int $armorClass = null,
         public bool $isPlayer = false,
         public ?int $userId = null,
     ) {
@@ -22,7 +21,6 @@ readonly class AddCharacterData
             initiative: $data['initiative'],
             maxHp: $data['max_hp'] ?? null,
             currentHp: $data['current_hp'] ?? null,
-            armorClass: $data['armor_class'] ?? null,
             isPlayer: $data['is_player'] ?? false,
             userId: $data['user_id'] ?? null,
         );

@@ -19,7 +19,6 @@ class CharacterCondition extends Model
         'combat_character_id',
         'condition_type',
         'custom_name',
-        'description',
         'duration_rounds',
     ];
 

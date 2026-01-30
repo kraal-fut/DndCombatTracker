@@ -241,5 +241,7 @@ test('player can view stats of other player characters', function () {
     $response = $this->actingAs($player2)->get(route('combats.show', $combat));
 
     $response->assertOk();
-    $response->assertSee('HP: 50/50');
+    $response->assertSee('Fighter');
+    $response->assertSee('HP:');
+    $response->assertSee('50/50');
 });

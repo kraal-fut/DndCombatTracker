@@ -57,35 +57,25 @@
                             </div>
                         </div>
 
-                        <div class="mb-6">
-                            <label for="armor_class" class="block text-sm font-medium text-gray-300">Armor Class
-                                (AC)</label>
-                            <input type="number" name="armor_class" id="armor_class" value="{{ old('armor_class') }}"
-                                required min="1" max="30"
-                                class="mt-1 block w-full rounded-md bg-gray-900 border-gray-600 text-white shadow-sm focus:border-red-500 focus:ring-red-500">
-                            @error('armor_class')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <div class="flex items-center justify-between">
-                            <a href="{{ route('combats.shared', $share->share_token) }}"
-                                class="text-gray-400 hover:text-gray-200">Cancel</a>
-                            <button type="submit"
-                                class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
-                                Add Character
-                            </button>
-                        </div>
-                    </form>
                 </div>
-            </div>
 
-            <div class="mt-4 bg-gray-800 border border-gray-700 rounded-lg p-4">
-                <p class="text-sm text-gray-400">
-                    <strong class="text-white">Tip:</strong> You can add multiple characters to the same combat
-                    (e.g., your main character and an animal companion).
-                </p>
+                <div class="flex items-center justify-between">
+                    <a href="{{ route('combats.shared', $share->share_token) }}"
+                        class="text-gray-400 hover:text-gray-200">Cancel</a>
+                    <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                        Add Character
+                    </button>
+                </div>
+                </form>
             </div>
         </div>
+
+        <div class="mt-4 bg-gray-800 border border-gray-700 rounded-lg p-4">
+            <p class="text-sm text-gray-400">
+                <strong class="text-white">Tip:</strong> You can add multiple characters to the same combat
+                (e.g., your main character and an animal companion).
+            </p>
+        </div>
+    </div>
     </div>
 @endsection

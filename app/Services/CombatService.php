@@ -32,7 +32,6 @@ class CombatService
             'original_initiative' => $data->initiative,
             'max_hp' => $data->maxHp,
             'current_hp' => $data->currentHp ?? $data->maxHp,
-            'armor_class' => $data->armorClass,
             'is_player' => $data->isPlayer,
             'user_id' => $data->userId,
             'order' => $maxOrder + 1,

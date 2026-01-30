@@ -15,7 +15,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $name
  * @property int|null $value
  * @property AdvantageState $advantage_state
- * @property string|null $description
  * @property int|null $duration_rounds
  */
 class CharacterStateEffect extends Model
@@ -28,7 +27,6 @@ class CharacterStateEffect extends Model
         'name',
         'value',
         'advantage_state',
-        'description',
         'duration_rounds',
     ];
 

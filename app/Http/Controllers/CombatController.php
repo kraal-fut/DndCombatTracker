@@ -16,7 +16,10 @@ class CombatController extends Controller
 {
     public function index(): View
     {
-        $combats = Combat::with('characters')->latest()->get();
+        $combats = Combat::visibleTo(auth()->user())
+            ->with('characters')
+            ->latest()
+            ->get();
 
         return view('combats.index', compact('combats'));
     }

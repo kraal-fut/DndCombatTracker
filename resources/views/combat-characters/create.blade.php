@@ -52,15 +52,6 @@
                 </div>
             </div>
 
-            <div>
-                <label for="armor_class" class="block text-sm font-medium mb-2">Armor Class (AC)</label>
-                <input type="number" name="armor_class" id="armor_class" value="{{ old('armor_class') }}"
-                    class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 text-white"
-                    min="1">
-                @error('armor_class')
-                    <p class="text-red-400 text-sm mt-1">{{ $message }}</p>
-                @enderror
-            </div>
 
             <div class="flex items-center">
                 <input type="checkbox" name="is_player" id="is_player" value="1" @checked(old('is_player'))

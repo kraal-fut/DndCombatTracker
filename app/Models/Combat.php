@@ -217,4 +217,25 @@ class Combat extends Model
             'is_active' => true,
         ]);
     }
+
+    /**
+     * Scope a query to only include combats visible to the given user.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param User $user
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeVisibleTo($query, User $user)
+    {
+        if ($user->isAdmin()) {
+            return $query;
+        }
+
+        return $query->where(function ($q) use ($user) {
+            $q->where('user_id', $user->id)
+                ->orWhereHas('characters', function ($cq) use ($user) {
+                    $cq->where('user_id', $user->id);
+                });
+        });
+    }
 }

@@ -10,7 +10,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $id
  * @property int $combat_character_id
  * @property string $name
- * @property string|null $description
  * @property bool $is_used
  */
 class CharacterReaction extends Model
@@ -20,7 +19,6 @@ class CharacterReaction extends Model
     protected $fillable = [
         'combat_character_id',
         'name',
-        'description',
         'is_used',
     ];
 

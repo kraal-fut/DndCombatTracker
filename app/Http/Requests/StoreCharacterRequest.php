@@ -18,7 +18,6 @@ class StoreCharacterRequest extends FormRequest
             'initiative' => 'required|integer|min:1',
             'max_hp' => 'nullable|integer|min:1',
             'current_hp' => 'nullable|integer|min:0',
-            'armor_class' => 'nullable|integer|min:1',
             'is_player' => 'nullable|boolean',
             'user_id' => 'nullable|exists:users,id',
         ];

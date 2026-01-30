@@ -16,7 +16,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int $original_initiative
  * @property int $max_hp
  * @property int $current_hp
- * @property int $armor_class
  * @property bool $is_player
  * @property int $order
  * @property \Illuminate\Database\Eloquent\Collection<int, CharacterCondition> $conditions
@@ -35,7 +34,6 @@ class CombatCharacter extends Model
         'original_initiative',
         'max_hp',
         'current_hp',
-        'armor_class',
         'is_player',
         'order',
     ];

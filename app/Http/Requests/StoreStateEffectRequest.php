@@ -18,7 +18,6 @@ class StoreStateEffectRequest extends FormRequest
             'name' => 'required|string|max:255',
             'value' => 'required|integer',
             'advantage_state' => 'required|string',
-            'description' => 'nullable|string',
             'duration_rounds' => 'nullable|integer|min:1',
         ];
     }
