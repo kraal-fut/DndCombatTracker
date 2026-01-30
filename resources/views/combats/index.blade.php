@@ -17,10 +17,12 @@
         @if($combats->isEmpty())
             <div class="bg-gray-800 rounded-lg p-12 text-center">
                 <p class="text-gray-400 text-lg mb-4">No combat encounters yet.</p>
-                <a href="{{ route('combats.create') }}"
-                    class="inline-block bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-md font-medium transition">
-                    Create First Combat
-                </a>
+                @can('create', App\Models\Combat::class)
+                    <a href="{{ route('combats.create') }}"
+                        class="inline-block bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-md font-medium transition">
+                        Create First Combat
+                    </a>
+                @endcan
             </div>
         @else
             <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
