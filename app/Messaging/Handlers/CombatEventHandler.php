@@ -7,10 +7,8 @@ use App\Events\CombatUpdated;
 use App\Messaging\Events\CharacterHPUpdated;
 use App\Messaging\Events\RoundAdvanced;
 use App\Messaging\Events\TurnAdvanced;
-use Ecotone\Messaging\Attribute\Asynchronous;
 use Ecotone\Modelling\Attribute\EventHandler;
 use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\Log;
 
 class CombatEventHandler
 {
