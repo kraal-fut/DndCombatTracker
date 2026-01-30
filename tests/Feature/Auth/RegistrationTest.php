@@ -14,8 +14,6 @@ test('new users can register', function () {
         'password_confirmation' => 'password',
     ]);
 
-    $this->assertGuest();
-    $response->assertRedirect(route('login'));
-    $response->assertSessionHas('status', 'Registration successful! ' .
-        'Please verify your email address before logging in.');
+    $this->assertAuthenticated();
+    $response->assertRedirect(route('dashboard', absolute: false));
 });
