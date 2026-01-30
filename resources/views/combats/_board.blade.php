@@ -192,9 +192,10 @@
                                 $canManage = $isOwnCharacter || $isDM || $isAdmin;
                             @endphp
 
-                            <div class="rounded-lg p-4 transition
-                                        {{ $isCurrentTurn ? 'bg-red-900 border-2 border-red-500' : 'bg-gray-800 border border-gray-700' }}
-                                        {{ $isOwnCharacter ? 'ring-2 ring-blue-500' : '' }}">
+                            <div
+                                class="rounded-lg p-4 transition
+                                                                                        {{ $isCurrentTurn ? 'bg-red-900 border-2 border-red-500' : 'bg-gray-800 border border-gray-700' }}
+                                                                                        {{ $isOwnCharacter ? 'ring-2 ring-blue-500' : '' }}">
 
                                 <div class="flex justify-between items-start mb-3">
                                     <div class="flex items-center space-x-4">
@@ -325,7 +326,8 @@
                                                     <div class="flex justify-between items-center bg-gray-800 rounded px-2 py-1">
                                                         <span class="text-xs text-white">
                                                             {{ $effect->name }}
-                                                            @if($effect->value !== 0) ({{ $effect->value > 0 ? '+' : '' }}{{ $effect->value }})
+                                                            @if($effect->value !== 0)
+                                                                ({{ $effect->modifier_type === \App\Enums\StateModifierType::Penalty ? '-' : ($effect->value > 0 ? '+' : '') }}{{ abs($effect->value) }})
                                                             @endif
                                                         </span>
                                                         @if($canManage)
