@@ -194,8 +194,8 @@
 
                             <div
                                 class="rounded-lg p-4 transition
-                                                                                        {{ $isCurrentTurn ? 'bg-red-900 border-2 border-red-500' : 'bg-gray-800 border border-gray-700' }}
-                                                                                        {{ $isOwnCharacter ? 'ring-2 ring-blue-500' : '' }}">
+                                                                                                        {{ $isCurrentTurn ? 'bg-red-900 border-2 border-red-500' : 'bg-gray-800 border border-gray-700' }}
+                                                                                                        {{ $isOwnCharacter ? 'ring-2 ring-blue-500' : '' }}">
 
                                 <div class="flex justify-between items-start mb-3">
                                     <div class="flex items-center space-x-4">
@@ -222,7 +222,11 @@
                                                     <div class="flex items-center gap-4 mt-1">
                                                         <div class="flex items-center gap-2">
                                                             <span class="text-green-400 font-semibold">HP:
-                                                                {{ $character->current_hp }}/{{ $character->max_hp }}</span>
+                                                                {{ $character->current_hp }}/{{ $character->max_hp }}
+                                                                @if($character->temporary_hp > 0)
+                                                                    <span class="text-blue-400">(+{{ $character->temporary_hp }})</span>
+                                                                @endif
+                                                            </span>
                                                             @can('updateHp', $character)
                                                                 <div class="flex gap-1 ml-2">
                                                                     <form
@@ -233,7 +237,8 @@
                                                                         <input type="number" name="hp_change" placeholder="DMG" min="1"
                                                                             class="w-16 px-1 py-0.5 text-xs bg-gray-900 border border-gray-600 rounded focus:outline-none focus:ring-1 focus:ring-red-500 text-white">
                                                                         <button type="submit"
-                                                                            class="px-2 py-0.5 text-xs bg-red-600 hover:bg-red-700 rounded transition text-white font-bold">-</button>
+                                                                            class="px-2 py-0.5 text-xs bg-red-600 hover:bg-red-700 rounded transition text-white font-bold"
+                                                                            title="Deal Damage">-</button>
                                                                     </form>
                                                                     <form
                                                                         action="{{ route('combats.characters.update-hp', [$combat, $character]) }}"
@@ -243,7 +248,19 @@
                                                                         <input type="number" name="hp_change" placeholder="HEAL" min="1"
                                                                             class="w-16 px-1 py-0.5 text-xs bg-gray-900 border border-gray-600 rounded focus:outline-none focus:ring-1 focus:ring-green-500 text-white">
                                                                         <button type="submit"
-                                                                            class="px-2 py-0.5 text-xs bg-green-600 hover:bg-green-700 rounded transition text-white font-bold">+</button>
+                                                                            class="px-2 py-0.5 text-xs bg-green-600 hover:bg-green-700 rounded transition text-white font-bold"
+                                                                            title="Heal">+</button>
+                                                                    </form>
+                                                                    <form
+                                                                        action="{{ route('combats.characters.update-hp', [$combat, $character]) }}"
+                                                                        method="POST" class="inline-flex items-center gap-1">
+                                                                        @csrf
+                                                                        <input type="hidden" name="change_type" value="temporary">
+                                                                        <input type="number" name="hp_change" placeholder="TEMP" min="1"
+                                                                            class="w-16 px-1 py-0.5 text-xs bg-gray-900 border border-gray-600 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-white">
+                                                                        <button type="submit"
+                                                                            class="px-2 py-0.5 text-xs bg-blue-600 hover:bg-blue-700 rounded transition text-white font-bold"
+                                                                            title="Set Temporary HP">T</button>
                                                                     </form>
                                                                 </div>
                                                             @endcan

@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int $original_initiative
  * @property int $max_hp
  * @property int $current_hp
+ * @property int $temporary_hp
  * @property bool $is_player
  * @property int $order
  * @property \Illuminate\Database\Eloquent\Collection<int, CharacterCondition> $conditions
@@ -34,6 +35,7 @@ class CombatCharacter extends Model
         'original_initiative',
         'max_hp',
         'current_hp',
+        'temporary_hp',
         'is_player',
         'order',
     ];
@@ -95,5 +97,30 @@ class CombatCharacter extends Model
     public function canUseReaction(): bool
     {
         return !$this->hasUsedReaction();
+    }
+
+    public function applyDamage(int $amount): void
+    {
+        $damageRemaining = abs($amount);
+
+        if ($this->temporary_hp > 0) {
+            $tempDamage = min($this->temporary_hp, $damageRemaining);
+            $this->temporary_hp -= $tempDamage;
+            $damageRemaining -= $tempDamage;
+        }
+
+        if ($damageRemaining > 0) {
+            $this->current_hp = max(0, $this->current_hp - $damageRemaining);
+        }
+    }
+
+    public function applyHealing(int $amount): void
+    {
+        $this->current_hp = min($this->max_hp, $this->current_hp + abs($amount));
+    }
+
+    public function setTemporaryHp(int $amount): void
+    {
+        $this->temporary_hp = abs($amount);
     }
 }

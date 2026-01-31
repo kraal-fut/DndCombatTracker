@@ -7,7 +7,8 @@ readonly class CharacterHPUpdated
     public function __construct(
         public int $combatId,
         public int $characterId,
-        public int $newHp
+        public int $newHp,
+        public int $temporaryHp = 0
     ) {
     }
 }

@@ -91,9 +91,11 @@ class CombatCharacterController extends Controller
             type: $type
         ));
 
-        $message = $type === HPUpdateType::Damage
-            ? abs($validated['hp_change']) . ' damage dealt!'
-            : abs($validated['hp_change']) . ' HP restored!';
+        $message = match ($type) {
+            HPUpdateType::Damage => abs($validated['hp_change']) . ' damage dealt!',
+            HPUpdateType::Heal => abs($validated['hp_change']) . ' HP restored!',
+            HPUpdateType::Temporary => abs($validated['hp_change']) . ' Temporary HP set!',
+        };
 
         return back()->with('success', $message);
     }

@@ -21,18 +21,19 @@ class CombatCommandHandler
     {
         $character = CombatCharacter::findOrFail($command->characterId);
 
-        if ($command->type === HPUpdateType::Damage) {
-            $character->current_hp = max(0, $character->current_hp - $command->changeAmount);
-        } else {
-            $character->current_hp = min($character->max_hp, $character->current_hp + $command->changeAmount);
-        }
+        match ($command->type) {
+            HPUpdateType::Damage => $character->applyDamage($command->changeAmount),
+            HPUpdateType::Heal => $character->applyHealing($command->changeAmount),
+            HPUpdateType::Temporary => $character->setTemporaryHp($command->changeAmount),
+        };
 
         $character->save();
 
         $eventBus->publish(new CharacterHPUpdated(
             $command->combatId,
             $command->characterId,
-            $character->current_hp
+            $character->current_hp,
+            $character->temporary_hp
         ));
     }
 
