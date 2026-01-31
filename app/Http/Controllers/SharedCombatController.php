@@ -100,8 +100,11 @@ class SharedCombatController extends Controller
             ->with('success', "Character '{$character->name}' added to combat!");
     }
 
-    public function updateCharacter(UpdateSharedCharacterRequest $request, string $token, CombatCharacter $character): RedirectResponse
-    {
+    public function updateCharacter(
+        UpdateSharedCharacterRequest $request,
+        string $token,
+        CombatCharacter $character
+    ): RedirectResponse {
         $share = CombatShare::where('share_token', $token)->first();
 
         if (!$share || !$share->isValid()) {
