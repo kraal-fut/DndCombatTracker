@@ -21,12 +21,11 @@ class CombatCommandHandler
     {
         $character = CombatCharacter::findOrFail($command->characterId);
 
-        match ($command->type) {
-            HPUpdateType::Damage => $character->applyDamage($command->changeAmount),
-            HPUpdateType::Heal => $character->applyHealing($command->changeAmount),
-            HPUpdateType::Temporary => $character->setTemporaryHp($command->changeAmount),
+        match ($command->payload->type) {
+            HPUpdateType::Damage => $character->applyDamage($command->payload->damages, $command->payload->ignoreResist),
+            HPUpdateType::Heal => $character->applyHealing($command->payload->changeAmount),
+            HPUpdateType::Temporary => $character->setTemporaryHp($command->payload->changeAmount),
         };
-
         $character->save();
 
         $eventBus->publish(new CharacterHPUpdated(

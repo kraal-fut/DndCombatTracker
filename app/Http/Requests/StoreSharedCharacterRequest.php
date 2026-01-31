@@ -1,25 +1,26 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreCharacterRequest extends FormRequest
+class StoreSharedCharacterRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        return auth()->check();
     }
 
     public function rules(): array
     {
         return [
             'name' => 'required|string|max:255',
-            'initiative' => 'required|integer|min:1',
-            'max_hp' => 'nullable|integer|min:1',
+            'initiative' => 'required|integer|min:1|max:30',
+            'max_hp' => 'required|integer|min:1',
             'current_hp' => 'nullable|integer|min:0',
-            'is_player' => 'nullable|boolean',
-            'user_id' => 'nullable|exists:users,id',
+            'armor_class' => 'required|integer|min:1|max:30',
             'resistances' => 'nullable|array',
             'resistances.*' => 'string',
             'immunities' => 'nullable|array',

@@ -55,27 +55,85 @@
                                 @enderror
                                 <p class="mt-1 text-xs text-gray-400">Defaults to Max HP</p>
                             </div>
-                        </div>
+                            <div class="mb-4">
+                                <label for="armor_class" class="block text-sm font-medium text-gray-300">Armor Class</label>
+                                <input type="number" name="armor_class" id="armor_class" value="{{ old('armor_class') }}"
+                                    required min="1" max="30"
+                                    class="mt-1 block w-full rounded-md bg-gray-900 border-gray-600 text-white shadow-sm focus:border-red-500 focus:ring-red-500">
+                                @error('armor_class')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
 
-                </div>
+                            <div class="border-t border-gray-700 pt-6 mt-6">
+                                <h3 class="text-lg font-semibold mb-4 text-white">Damage Modifiers</h3>
 
-                <div class="flex items-center justify-between">
-                    <a href="{{ route('combats.shared', $share->share_token) }}"
-                        class="text-gray-400 hover:text-gray-200">Cancel</a>
-                    <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
-                        Add Character
-                    </button>
+                                <div class="space-y-6">
+                                    <!-- Resistances -->
+                                    <div>
+                                        <label class="block text-sm font-medium mb-3 text-blue-400">Resistances (Half
+                                            Damage)</label>
+                                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                                            @foreach(\App\Enums\DamageType::cases() as $type)
+                                                <label class="flex items-center space-x-2 text-sm text-gray-300">
+                                                    <input type="checkbox" name="resistances[]" value="{{ $type->value }}"
+                                                        @checked(is_array(old('resistances')) && in_array($type->value, old('resistances')))>
+                                                    <span>{{ $type->label() }}</span>
+                                                </label>
+                                            @endforeach
+                                        </div>
+                                    </div>
+
+                                    <!-- Immunities -->
+                                    <div>
+                                        <label class="block text-sm font-medium mb-3 text-green-400">Immunities (No
+                                            Damage)</label>
+                                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                                            @foreach(\App\Enums\DamageType::cases() as $type)
+                                                <label class="flex items-center space-x-2 text-sm text-gray-300">
+                                                    <input type="checkbox" name="immunities[]" value="{{ $type->value }}"
+                                                        @checked(is_array(old('immunities')) && in_array($type->value, old('immunities')))>
+                                                    <span>{{ $type->label() }}</span>
+                                                </label>
+                                            @endforeach
+                                        </div>
+                                    </div>
+
+                                    <!-- Vulnerabilities -->
+                                    <div>
+                                        <label class="block text-sm font-medium mb-3 text-red-400">Vulnerabilities (Double
+                                            Damage)</label>
+                                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                                            @foreach(\App\Enums\DamageType::cases() as $type)
+                                                <label class="flex items-center space-x-2 text-sm text-gray-300">
+                                                    <input type="checkbox" name="vulnerabilities[]" value="{{ $type->value }}"
+                                                        @checked(is_array(old('vulnerabilities')) && in_array($type->value, old('vulnerabilities')))>
+                                                    <span>{{ $type->label() }}</span>
+                                                </label>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-between mt-8">
+                                <a href="{{ route('combats.shared', $share->share_token) }}"
+                                    class="text-gray-400 hover:text-gray-200">Cancel</a>
+                                <button type="submit"
+                                    class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded transition">
+                                    Add Character
+                                </button>
+                            </div>
+                    </form>
                 </div>
-                </form>
+            </div>
+
+            <div class="mt-4 bg-gray-800 border border-gray-700 rounded-lg p-4">
+                <p class="text-sm text-gray-400">
+                    <strong class="text-white">Tip:</strong> You can add multiple characters to the same combat
+                    (e.g., your main character and an animal companion).
+                </p>
             </div>
         </div>
-
-        <div class="mt-4 bg-gray-800 border border-gray-700 rounded-lg p-4">
-            <p class="text-sm text-gray-400">
-                <strong class="text-white">Tip:</strong> You can add multiple characters to the same combat
-                (e.g., your main character and an animal companion).
-            </p>
-        </div>
-    </div>
     </div>
 @endsection

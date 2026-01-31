@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\DataTransferObjects\AddCharacterData;
@@ -84,17 +86,29 @@ class CombatCharacterController extends Controller
         $validated = $request->validated();
         $type = HPUpdateType::from($validated['change_type']);
 
+        $damages = collect($validated['damages'] ?? [])
+            ->map(fn($d) => new \App\DTOs\DamageEntry(amount: (int) $d['amount'], type: $d['type']))
+            ->all();
+
+        if (empty($damages) && $type === HPUpdateType::Damage) {
+            $damages = [new \App\DTOs\DamageEntry(amount: (int) ($validated['hp_change'] ?? 0), type: 'untyped')];
+        }
+
         $commandBus->send(new UpdateCharacterHP(
             combatId: $combat->id,
             characterId: $characterModel->id,
-            changeAmount: abs($validated['hp_change']),
-            type: $type
+            payload: new \App\DTOs\HPUpdatePayload(
+                type: $type,
+                changeAmount: isset($validated['hp_change']) ? abs((int) $validated['hp_change']) : 0,
+                damages: $damages,
+                ignoreResist: (bool) ($validated['ignore_resist'] ?? false)
+            )
         ));
 
         $message = match ($type) {
-            HPUpdateType::Damage => abs($validated['hp_change']) . ' damage dealt!',
-            HPUpdateType::Heal => abs($validated['hp_change']) . ' HP restored!',
-            HPUpdateType::Temporary => abs($validated['hp_change']) . ' Temporary HP set!',
+            HPUpdateType::Damage => 'Damage dealt!',
+            HPUpdateType::Heal => abs($validated['hp_change'] ?? 0) . ' HP restored!',
+            HPUpdateType::Temporary => abs($validated['hp_change'] ?? 0) . ' Temporary HP set!',
         };
 
         return back()->with('success', $message);

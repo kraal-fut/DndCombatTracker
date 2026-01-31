@@ -60,8 +60,10 @@ class CombatCommandHandlerTest extends TestCase
         $command = new UpdateCharacterHP(
             $this->combat->id,
             $this->character->id,
-            20,
-            HPUpdateType::Damage
+            new \App\DTOs\HPUpdatePayload(
+                type: HPUpdateType::Damage,
+                damages: [new \App\DTOs\DamageEntry(20, 'untyped')]
+            )
         );
 
         $this->eventBus->shouldReceive('publish')
@@ -82,8 +84,10 @@ class CombatCommandHandlerTest extends TestCase
         $command = new UpdateCharacterHP(
             $this->combat->id,
             $this->character->id,
-            20,
-            HPUpdateType::Heal
+            new \App\DTOs\HPUpdatePayload(
+                type: HPUpdateType::Heal,
+                changeAmount: 20
+            )
         );
 
         $this->eventBus->shouldReceive('publish')

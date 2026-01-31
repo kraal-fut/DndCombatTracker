@@ -60,7 +60,7 @@
                 <label for="is_player" class="ml-2 text-sm font-medium">Player Character</label>
             </div>
 
-            <div id="player_assignment" style="display: {{ old('is_player') ? 'block' : 'none' }}">
+            <div id="player_assignment" style="display: {{ old('is_player') ? 'block' : 'none' }}" class="mt-4">
                 <label for="user_id" class="block text-sm font-medium mb-2">Assign to Player</label>
                 <select name="user_id" id="user_id"
                     class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 text-white">
@@ -74,6 +74,54 @@
                 @error('user_id')
                     <p class="text-red-400 text-sm mt-1">{{ $message }}</p>
                 @enderror
+            </div>
+
+            <div class="border-t border-gray-700 pt-6 mt-6">
+                <h3 class="text-lg font-semibold mb-4">Damage Modifiers</h3>
+
+                <div class="space-y-6">
+                    <!-- Resistances -->
+                    <div>
+                        <label class="block text-sm font-medium mb-3 text-blue-400">Resistances (Half Damage)</label>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                            @foreach(\App\Enums\DamageType::cases() as $type)
+                                <label class="flex items-center space-x-2 text-sm">
+                                    <input type="checkbox" name="resistances[]" value="{{ $type->value }}"
+                                        @checked(is_array(old('resistances')) && in_array($type->value, old('resistances')))>
+                                    <span>{{ $type->label() }}</span>
+                                </label>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    <!-- Immunities -->
+                    <div>
+                        <label class="block text-sm font-medium mb-3 text-green-400">Immunities (No Damage)</label>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                            @foreach(\App\Enums\DamageType::cases() as $type)
+                                <label class="flex items-center space-x-2 text-sm">
+                                    <input type="checkbox" name="immunities[]" value="{{ $type->value }}"
+                                        @checked(is_array(old('immunities')) && in_array($type->value, old('immunities')))>
+                                    <span>{{ $type->label() }}</span>
+                                </label>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    <!-- Vulnerabilities -->
+                    <div>
+                        <label class="block text-sm font-medium mb-3 text-red-400">Vulnerabilities (Double Damage)</label>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                            @foreach(\App\Enums\DamageType::cases() as $type)
+                                <label class="flex items-center space-x-2 text-sm">
+                                    <input type="checkbox" name="vulnerabilities[]" value="{{ $type->value }}"
+                                        @checked(is_array(old('vulnerabilities')) && in_array($type->value, old('vulnerabilities')))>
+                                    <span>{{ $type->label() }}</span>
+                                </label>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="flex space-x-4">

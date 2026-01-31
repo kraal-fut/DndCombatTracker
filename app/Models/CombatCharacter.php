@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -36,6 +38,9 @@ class CombatCharacter extends Model
         'max_hp',
         'current_hp',
         'temporary_hp',
+        'resistances',
+        'immunities',
+        'vulnerabilities',
         'is_player',
         'order',
     ];
@@ -44,6 +49,9 @@ class CombatCharacter extends Model
     {
         return [
             'is_player' => 'boolean',
+            'resistances' => 'array',
+            'immunities' => 'array',
+            'vulnerabilities' => 'array',
         ];
     }
 
@@ -99,9 +107,42 @@ class CombatCharacter extends Model
         return !$this->hasUsedReaction();
     }
 
-    public function applyDamage(int $amount): void
+    /**
+     * Apply damage to the character, considering resistances, immunities, and vulnerabilities.
+     *
+     * @param array<int, array{amount: int, type: string}> $damages
+     * @param bool $ignoreResist Whether to ignore resistances (e.g., Elemental Adept)
+     */
+    /**
+     * @param \App\DTOs\DamageEntry[] $damages
+     */
+    public function applyDamage(array $damages, bool $ignoreResist = false): void
     {
-        $damageRemaining = abs($amount);
+        $totalDamage = 0;
+        $resistances = $this->resistances ?? [];
+        $immunities = $this->immunities ?? [];
+        $vulnerabilities = $this->vulnerabilities ?? [];
+
+        foreach ($damages as $damage) {
+            $amount = abs($damage->amount);
+            $type = $damage->type;
+
+            if (in_array($type, $immunities)) {
+                continue;
+            }
+
+            if (!$ignoreResist && in_array($type, $resistances)) {
+                $amount = (int) floor($amount / 2);
+            }
+
+            if (in_array($type, $vulnerabilities)) {
+                $amount *= 2;
+            }
+
+            $totalDamage += $amount;
+        }
+
+        $damageRemaining = $totalDamage;
 
         if ($this->temporary_hp > 0) {
             $tempDamage = min($this->temporary_hp, $damageRemaining);
