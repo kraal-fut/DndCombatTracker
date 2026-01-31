@@ -106,42 +106,139 @@
                                                 @endif
                                             </span>
                                             @can('updateHp', $character)
-                                                <div class="flex gap-1 ml-2">
+                                                <div class="flex gap-1 ml-2" x-data="{ damageModal: false }">
+                                                    <!-- Damage Button -->
+                                                    <button @click="damageModal = true"
+                                                        class="px-2 py-0.5 text-xs bg-red-600 hover:bg-red-700 rounded transition text-white font-bold"
+                                                        title="Deal Damage">DAM</button>
+
+                                                    <!-- Damage Modal -->
+                                                    <div x-show="damageModal"
+                                                        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
+                                                        x-cloak>
+                                                        <div @click.away="damageModal = false"
+                                                            class="bg-gray-800 border border-gray-700 rounded-lg shadow-xl w-full max-w-md p-6"
+                                                            x-data="{ 
+                                                                        entries: [{amount: '', type: 'bludgeoning'}],
+                                                                        ignoreResist: false,
+                                                                        addEntry() { this.entries.push({amount: '', type: 'bludgeoning'}) },
+                                                                        removeEntry(index) { this.entries.splice(index, 1) }
+                                                                    }">
+                                                            <h3 class="text-xl font-bold mb-4">Apply Damage to
+                                                                {{ $character->name }}</h3>
+
+                                                            <form
+                                                                action="{{ route('combats.characters.update-hp', [$combat, $character]) }}"
+                                                                method="POST">
+                                                                @csrf
+                                                                <input type="hidden" name="change_type" value="damage">
+
+                                                                <div class="space-y-3 mb-4 max-h-60 overflow-y-auto pr-2">
+                                                                    <template x-for="(entry, index) in entries" :key="index">
+                                                                        <div class="flex gap-2">
+                                                                            <input type="number" x-model="entry.amount"
+                                                                                :name="'damages['+index+'][amount]'"
+                                                                                placeholder="Amt"
+                                                                                class="w-20 px-2 py-1 bg-gray-900 border border-gray-600 rounded text-white"
+                                                                                required>
+                                                                            <select x-model="entry.type"
+                                                                                :name="'damages['+index+'][type]'"
+                                                                                class="flex-1 px-2 py-1 bg-gray-900 border border-gray-600 rounded text-white">
+                                                                                @foreach(\App\Enums\DamageType::cases() as $type)
+                                                                                    <option value="{{ $type->value }}">
+                                                                                        {{ $type->label() }}</option>
+                                                                                @endforeach
+                                                                            </select>
+                                                                            <button type="button" @click="removeEntry(index)"
+                                                                                class="text-red-400 hover:text-red-300 px-2">×</button>
+                                                                        </div>
+                                                                    </template>
+                                                                </div>
+
+                                                                <button type="button" @click="addEntry()"
+                                                                    class="text-sm text-blue-400 hover:text-blue-300 mb-4">+ Add
+                                                                    Damage Type</button>
+
+                                                                <div class="flex items-center mb-6">
+                                                                    <input type="checkbox" name="ignore_resist"
+                                                                        id="ignore_resist_shared_{{ $character->id }}"
+                                                                        x-model="ignoreResist" value="1"
+                                                                        class="w-4 h-4 text-red-600 bg-gray-700 border-gray-600 rounded focus:ring-red-500">
+                                                                    <label :for="'ignore_resist_shared_{{ $character->id }}'"
+                                                                        class="ml-2 text-sm">Ignore Resistance (Elemental
+                                                                        Adept)</label>
+                                                                </div>
+
+                                                                <div class="flex justify-end gap-3">
+                                                                    <button type="button" @click="damageModal = false"
+                                                                        class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded text-white">Cancel</button>
+                                                                    <button type="submit"
+                                                                        class="px-4 py-2 bg-red-600 hover:bg-red-700 rounded text-white font-bold">Apply
+                                                                        Damage</button>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+
                                                     <form
                                                         action="{{ route('combats.characters.update-hp', [$combat, $character]) }}"
-                                                        method="POST" class="inline-flex items-center gap-1">
-                                                        @csrf
-                                                        <input type="hidden" name="change_type" value="damage">
-                                                        <input type="number" name="hp_change" placeholder="DMG" min="1"
-                                                            class="w-16 px-1 py-0.5 text-xs bg-gray-900 border border-gray-600 rounded focus:outline-none focus:ring-1 focus:ring-red-500 text-white">
-                                                        <button type="submit"
-                                                            class="px-2 py-0.5 text-xs bg-red-600 hover:bg-red-700 rounded transition text-white font-bold"
-                                                            title="Deal Damage">-</button>
-                                                    </form>
-                                                    <form
-                                                        action="{{ route('combats.characters.update-hp', [$combat, $character]) }}"
-                                                        method="POST" class="inline-flex items-center gap-1">
+                                                        method="POST" class="inline-flex items-center gap-1 text-white">
                                                         @csrf
                                                         <input type="hidden" name="change_type" value="heal">
-                                                        <input type="number" name="hp_change" placeholder="HEAL" min="1"
-                                                            class="w-16 px-1 py-0.5 text-xs bg-gray-900 border border-gray-600 rounded focus:outline-none focus:ring-1 focus:ring-green-500 text-white">
+                                                        <input type="number" name="hp_change" placeholder="H" min="1"
+                                                            class="w-12 px-1 py-0.5 text-xs bg-gray-900 border border-gray-600 rounded focus:outline-none focus:ring-1 focus:ring-green-500 text-white">
                                                         <button type="submit"
                                                             class="px-2 py-0.5 text-xs bg-green-600 hover:bg-green-700 rounded transition text-white font-bold"
                                                             title="Heal">+</button>
                                                     </form>
                                                     <form
                                                         action="{{ route('combats.characters.update-hp', [$combat, $character]) }}"
-                                                        method="POST" class="inline-flex items-center gap-1">
+                                                        method="POST" class="inline-flex items-center gap-1 text-white">
                                                         @csrf
                                                         <input type="hidden" name="change_type" value="temporary">
-                                                        <input type="number" name="hp_change" placeholder="TEMP" min="1"
-                                                            class="w-16 px-1 py-0.5 text-xs bg-gray-900 border border-gray-600 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-white">
+                                                        <input type="number" name="hp_change" placeholder="T" min="1"
+                                                            class="w-12 px-1 py-0.5 text-xs bg-gray-900 border border-gray-600 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-white">
                                                         <button type="submit"
                                                             class="px-2 py-0.5 text-xs bg-blue-600 hover:bg-blue-700 rounded transition text-white font-bold"
                                                             title="Set Temporary HP">T</button>
                                                     </form>
                                                 </div>
                                             @endcan
+                                            <div class="flex flex-wrap gap-2 mt-2">
+                                                @if($character->resistances && count($character->resistances) > 0)
+                                                    <div class="flex items-center gap-1">
+                                                        <span class="text-[10px] uppercase font-bold text-blue-400">Res:</span>
+                                                        @foreach($character->resistances as $res)
+                                                            <span
+                                                                class="px-1.5 py-0.5 bg-blue-900/30 text-blue-300 rounded text-[10px] border border-blue-800/50">
+                                                                {{ ucfirst($res) }}
+                                                            </span>
+                                                        @endforeach
+                                                    </div>
+                                                @endif
+                                                @if($character->immunities && count($character->immunities) > 0)
+                                                    <div class="flex items-center gap-1">
+                                                        <span class="text-[10px] uppercase font-bold text-green-400">Imm:</span>
+                                                        @foreach($character->immunities as $imm)
+                                                            <span
+                                                                class="px-1.5 py-0.5 bg-green-900/30 text-green-300 rounded text-[10px] border border-green-800/50">
+                                                                {{ ucfirst($imm) }}
+                                                            </span>
+                                                        @endforeach
+                                                    </div>
+                                                @endif
+                                                @if($character->vulnerabilities && count($character->vulnerabilities) > 0)
+                                                    <div class="flex items-center gap-1">
+                                                        <span class="text-[10px] uppercase font-bold text-red-400">Vul:</span>
+                                                        @foreach($character->vulnerabilities as $vul)
+                                                            <span
+                                                                class="px-1.5 py-0.5 bg-red-900/30 text-red-300 rounded text-[10px] border border-red-800/50">
+                                                                {{ ucfirst($vul) }}
+                                                            </span>
+                                                        @endforeach
+                                                    </div>
+                                                @endif
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="text-gray-400 text-sm">AC: {{ $character->armor_class }}</div>

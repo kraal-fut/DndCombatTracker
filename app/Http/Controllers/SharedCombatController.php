@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreSharedCharacterRequest;
+use App\Http\Requests\UpdateSharedCharacterRequest;
 use App\Models\Combat;
 use App\Models\CombatCharacter;
 use App\Models\CombatShare;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class SharedCombatController extends Controller
@@ -67,25 +68,15 @@ class SharedCombatController extends Controller
         return view('combats.add-character', compact('combat', 'share'));
     }
 
-    public function storeCharacter(Request $request, string $token): RedirectResponse
+    public function storeCharacter(StoreSharedCharacterRequest $request, string $token): RedirectResponse
     {
-        if (!auth()->check()) {
-            return redirect()->route('login');
-        }
-
         $share = CombatShare::where('share_token', $token)->first();
 
         if (!$share || !$share->isValid()) {
             abort(404, 'Combat share link is invalid or has expired.');
         }
 
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'initiative' => 'required|integer|min:1|max:30',
-            'max_hp' => 'required|integer|min:1',
-            'current_hp' => 'nullable|integer|min:0',
-            'armor_class' => 'required|integer|min:1|max:30',
-        ]);
+        $validated = $request->validated();
 
         /** @var Combat $combat */
         $combat = $share->combat;
@@ -100,18 +91,20 @@ class SharedCombatController extends Controller
             'armor_class' => $validated['armor_class'],
             'order' => 0,
             'is_player' => true,
+            'resistances' => $validated['resistances'] ?? [],
+            'immunities' => $validated['immunities'] ?? [],
+            'vulnerabilities' => $validated['vulnerabilities'] ?? [],
         ]);
 
         return redirect()->route('combats.shared', $token)
             ->with('success', "Character '{$character->name}' added to combat!");
     }
 
-    public function updateCharacter(Request $request, string $token, CombatCharacter $character): RedirectResponse
-    {
-        if (!auth()->check()) {
-            return redirect()->route('login');
-        }
-
+    public function updateCharacter(
+        UpdateSharedCharacterRequest $request,
+        string $token,
+        CombatCharacter $character
+    ): RedirectResponse {
         $share = CombatShare::where('share_token', $token)->first();
 
         if (!$share || !$share->isValid()) {
@@ -122,10 +115,7 @@ class SharedCombatController extends Controller
             abort(403, 'You can only edit your own characters.');
         }
 
-        $validated = $request->validate([
-            'current_hp' => 'required|integer|min:0',
-            'notes' => 'nullable|string|max:1000',
-        ]);
+        $validated = $request->validated();
 
         $character->update($validated);
 
