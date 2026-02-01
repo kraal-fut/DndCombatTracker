@@ -41,6 +41,7 @@ class CombatCharacter extends Model
         'resistances',
         'immunities',
         'vulnerabilities',
+        'condition_immunities',
         'is_player',
         'order',
     ];
@@ -52,6 +53,7 @@ class CombatCharacter extends Model
             'resistances' => 'array',
             'immunities' => 'array',
             'vulnerabilities' => 'array',
+            'condition_immunities' => 'array',
         ];
     }
 
@@ -163,5 +165,20 @@ class CombatCharacter extends Model
     public function setTemporaryHp(int $amount): void
     {
         $this->temporary_hp = abs($amount);
+    }
+
+    public function hasConditionImmunity(string $type): bool
+    {
+        return in_array($type, $this->condition_immunities ?? []);
+    }
+
+    public function addCondition(array $data, bool $bypassImmunity = false): bool
+    {
+        if (!$bypassImmunity && $this->hasConditionImmunity($data['condition_type'])) {
+            return false;
+        }
+
+        $this->conditions()->create($data);
+        return true;
     }
 }

@@ -34,6 +34,10 @@ class CombatService
             'current_hp' => $data->currentHp ?? $data->maxHp,
             'is_player' => $data->isPlayer,
             'user_id' => $data->userId,
+            'resistances' => $data->resistances,
+            'immunities' => $data->immunities,
+            'vulnerabilities' => $data->vulnerabilities,
+            'condition_immunities' => $data->conditionImmunities,
             'order' => $maxOrder + 1,
         ]);
 

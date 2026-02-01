@@ -128,6 +128,21 @@
                 </div>
             </div>
 
+            <div class="border-t border-gray-700 pt-6 mt-6">
+                <h3 class="text-lg font-semibold mb-4">Condition Immunities</h3>
+
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    @foreach(\App\Enums\ConditionType::cases() as $type)
+                        @continue($type === \App\Enums\ConditionType::Custom)
+                        <label class="flex items-center space-x-2 text-sm">
+                            <input type="checkbox" name="condition_immunities[]" value="{{ $type->value }}"
+                                @checked(is_array(old('condition_immunities', $character->condition_immunities)) && in_array($type->value, old('condition_immunities', $character->condition_immunities)))>
+                            <span>{{ $type->label() }}</span>
+                        </label>
+                    @endforeach
+                </div>
+            </div>
+
             <div class="flex space-x-4">
                 <button type="submit"
                     class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-md font-medium transition">

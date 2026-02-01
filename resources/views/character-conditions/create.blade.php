@@ -46,6 +46,13 @@
                 @enderror
             </div>
 
+            <div class="flex items-center">
+                <input type="checkbox" name="bypass_immunity" id="bypass_immunity" value="1"
+                    @checked(old('bypass_immunity'))
+                    class="w-4 h-4 text-red-600 bg-gray-700 border-gray-600 rounded focus:ring-red-500">
+                <label for="bypass_immunity" class="ml-2 text-sm font-medium">Bypass Immunity</label>
+            </div>
+
             <div class="flex space-x-4">
                 <button type="submit"
                     class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-md font-medium transition">

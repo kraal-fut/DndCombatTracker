@@ -33,6 +33,22 @@
             </header>
         @endif
 
+        <!-- Flash Messages -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+            @if(session('success'))
+                <div class="bg-green-900 border border-green-700 text-green-300 px-4 py-3 rounded relative mb-4"
+                    role="alert">
+                    <span class="block sm:inline">{{ session('success') }}</span>
+                </div>
+            @endif
+
+            @if(session('error'))
+                <div class="bg-red-900 border border-red-700 text-red-300 px-4 py-3 rounded relative mb-4" role="alert">
+                    <span class="block sm:inline">{{ session('error') }}</span>
+                </div>
+            @endif
+        </div>
+
         <!-- Page Content -->
         <main>
             @yield('content')
