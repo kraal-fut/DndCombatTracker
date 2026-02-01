@@ -17,6 +17,7 @@ class StoreConditionRequest extends FormRequest
             'condition_type' => 'required|string',
             'custom_name' => 'nullable|string|max:255',
             'duration_rounds' => 'nullable|integer|min:1',
+            'bypass_immunity' => 'nullable|boolean',
         ];
     }
 }

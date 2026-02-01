@@ -94,6 +94,7 @@ class SharedCombatController extends Controller
             'resistances' => $validated['resistances'] ?? [],
             'immunities' => $validated['immunities'] ?? [],
             'vulnerabilities' => $validated['vulnerabilities'] ?? [],
+            'condition_immunities' => $validated['condition_immunities'] ?? [],
         ]);
 
         return redirect()->route('combats.shared', $token)

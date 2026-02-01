@@ -9,12 +9,6 @@
 @section('content')
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            @if (session('success'))
-                <div class="mb-4 bg-green-900 border border-green-700 text-green-300 px-4 py-3 rounded">
-                    {{ session('success') }}
-                </div>
-            @endif
-
             @include('combats._shared_board')
         </div>
     </div>
@@ -28,7 +22,7 @@
                     channel.listen('.combat.updated', (e) => {
                         // If user is authenticated, we might need to redirect to main board
                         const isAuth = @json(auth()->check());
-                        
+
                         fetch(window.location.href, {
                             headers: {
                                 'X-Partial-Board': 'true'

@@ -19,7 +19,14 @@ class CharacterConditionController extends Controller
 
     public function store(StoreConditionRequest $request, CombatCharacter $character): RedirectResponse
     {
-        $character->conditions()->create($request->validated());
+        $validated = $request->validated();
+        $bypassImmunity = (bool) ($validated['bypass_immunity'] ?? false);
+
+        $success = $character->addCondition($validated, $bypassImmunity);
+
+        if (!$success) {
+            return back()->with('error', "Character is immune to {$validated['condition_type']}!");
+        }
 
         return redirect()->route('combats.show', $character->combat)
             ->with('success', 'Condition added to character!');

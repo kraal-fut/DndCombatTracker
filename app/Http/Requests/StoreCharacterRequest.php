@@ -26,6 +26,8 @@ class StoreCharacterRequest extends FormRequest
             'immunities.*' => 'string',
             'vulnerabilities' => 'nullable|array',
             'vulnerabilities.*' => 'string',
+            'condition_immunities' => 'nullable|array',
+            'condition_immunities.*' => 'string',
         ];
     }
 }

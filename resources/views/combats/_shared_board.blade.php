@@ -119,13 +119,14 @@
                                                         <div @click.away="damageModal = false"
                                                             class="bg-gray-800 border border-gray-700 rounded-lg shadow-xl w-full max-w-md p-6"
                                                             x-data="{ 
-                                                                        entries: [{amount: '', type: 'bludgeoning'}],
-                                                                        ignoreResist: false,
-                                                                        addEntry() { this.entries.push({amount: '', type: 'bludgeoning'}) },
-                                                                        removeEntry(index) { this.entries.splice(index, 1) }
-                                                                    }">
+                                                                                entries: [{amount: '', type: 'bludgeoning'}],
+                                                                                ignoreResist: false,
+                                                                                addEntry() { this.entries.push({amount: '', type: 'bludgeoning'}) },
+                                                                                removeEntry(index) { this.entries.splice(index, 1) }
+                                                                            }">
                                                             <h3 class="text-xl font-bold mb-4">Apply Damage to
-                                                                {{ $character->name }}</h3>
+                                                                {{ $character->name }}
+                                                            </h3>
 
                                                             <form
                                                                 action="{{ route('combats.characters.update-hp', [$combat, $character]) }}"
@@ -146,7 +147,8 @@
                                                                                 class="flex-1 px-2 py-1 bg-gray-900 border border-gray-600 rounded text-white">
                                                                                 @foreach(\App\Enums\DamageType::cases() as $type)
                                                                                     <option value="{{ $type->value }}">
-                                                                                        {{ $type->label() }}</option>
+                                                                                        {{ $type->label() }}
+                                                                                    </option>
                                                                                 @endforeach
                                                                             </select>
                                                                             <button type="button" @click="removeEntry(index)"
@@ -234,6 +236,18 @@
                                                             <span
                                                                 class="px-1.5 py-0.5 bg-red-900/30 text-red-300 rounded text-[10px] border border-red-800/50">
                                                                 {{ ucfirst($vul) }}
+                                                            </span>
+                                                        @endforeach
+                                                    </div>
+                                                @endif
+                                                @if($character->condition_immunities && count($character->condition_immunities) > 0)
+                                                    <div class="flex items-center gap-1">
+                                                        <span
+                                                            class="text-[10px] uppercase font-bold text-purple-400">CImm:</span>
+                                                        @foreach($character->condition_immunities as $cimm)
+                                                            <span
+                                                                class="px-1.5 py-0.5 bg-purple-900/30 text-purple-300 rounded text-[10px] border border-purple-800/50">
+                                                                {{ ucfirst($cimm) }}
                                                             </span>
                                                         @endforeach
                                                     </div>

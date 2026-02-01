@@ -351,6 +351,16 @@
                                                                         @endforeach
                                                                     </div>
                                                                 @endif
+                                                                @if($character->condition_immunities && count($character->condition_immunities) > 0)
+                                                                    <div class="flex items-center gap-1">
+                                                                        <span class="text-[10px] uppercase font-bold text-purple-400">CImm:</span>
+                                                                        @foreach($character->condition_immunities as $cimm)
+                                                                            <span class="px-1.5 py-0.5 bg-purple-900/30 text-purple-300 rounded text-[10px] border border-purple-800/50">
+                                                                                {{ ucfirst($cimm) }}
+                                                                            </span>
+                                                                        @endforeach
+                                                                    </div>
+                                                                @endif
                                                             </div>
                                                         @endcan
                                                     </div>
